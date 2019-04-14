@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-04-14T11:45:39.113Z</updated>
+  <updated>2019-04-14T11:58:15.468Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title></title>
+    <link href="http://yoursite.com/2019/04/14/boostnote/"/>
+    <id>http://yoursite.com/2019/04/14/boostnote/</id>
+    <published>2019-04-14T11:58:15.468Z</published>
+    <updated>2019-04-14T11:58:15.468Z</updated>
+    
+    <content type="html"><![CDATA[{"folders":[],"version":"1.0"}]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        {&quot;folders&quot;:[],&quot;version&quot;:&quot;1.0&quot;}
+      
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Activity管理类的封装</title>
