@@ -2,30 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/2019/04/13/%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/</loc>
+    <loc>http://yoursite.com/2019/04/13/Android/%E8%87%AA%E5%AE%9A%E4%B9%89ViewGroup/</loc>
     
-    <lastmod>2019-04-14T12:14:21.451Z</lastmod>
+    <lastmod>2019-04-14T12:19:01.711Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/04/14/notes/boostnote/</loc>
+    <loc>http://yoursite.com/2019/04/14/Android/Handler%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/</loc>
+    
+    <lastmod>2019-04-14T12:16:34.349Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/04/14/Android/Android-Studio%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96%E5%86%B2%E7%AA%81/</loc>
+    
+    <lastmod>2019-04-14T12:16:21.341Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/04/14/Android/Activity%E7%AE%A1%E7%90%86%E7%B1%BB%E7%9A%84%E5%B0%81%E8%A3%85/</loc>
+    
+    <lastmod>2019-04-14T12:16:17.656Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/notes/boostnote.json</loc>
     
     <lastmod>2019-04-14T12:14:15.466Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2019/04/14/Activity%E7%AE%A1%E7%90%86%E7%B1%BB%E7%9A%84%E5%B0%81%E8%A3%85/</loc>
-    
-    <lastmod>2019-04-14T12:14:01.335Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2019/04/14/fragment%E6%87%92%E5%8A%A0%E8%BD%BD/</loc>
-    
-    <lastmod>2019-04-14T12:13:43.935Z</lastmod>
     
   </url>
   
@@ -47,20 +54,6 @@
     <loc>http://yoursite.com/tags/index.html</loc>
     
     <lastmod>2019-04-14T12:07:12.362Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2019/04/14/Handler%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/</loc>
-    
-    <lastmod>2019-04-14T11:42:24.664Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2019/04/14/Android-Studio%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96%E5%86%B2%E7%AA%81/</loc>
-    
-    <lastmod>2019-04-14T11:42:19.908Z</lastmod>
     
   </url>
   
