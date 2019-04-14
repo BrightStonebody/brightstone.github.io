@@ -72,7 +72,7 @@
     root: '/',
     scheme: 'Gemini',
     version: '7.1.0',
-    sidebar: {"position":"left","width":120,"display":"post","offset":12,"onmobile":false,"dimmer":false},
+    sidebar: {"position":"left","width":150,"display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
     back2top_sidebar: false,
     fancybox: false,
@@ -109,8 +109,6 @@
 <meta name="twitter:description" content="C语言结构体的内存对齐内存对齐原则 数据成员对齐规则：结构（struct或联合union）的数据成员，第一个数据成员放在offset为0的地方，以后每个数据成员存储的起始位置: min(#pragma pack()指定的数,这个数据%成员的自身长度)的倍数  结构体作为成员：如果一个结构里有某些结构体成员，则结构体成员要从min(#pragram pack() , 内部长度最长的数据成员)的整数倍">
 
 
-
-  <link rel="alternate" href="/atom.xml" title="BrightStone" type="application/atom+xml">
 
 
 
@@ -223,6 +221,23 @@
     
 
     <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
 
   </li>
         
@@ -627,13 +642,6 @@
             </nav>
           
 
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
           
 
           

@@ -72,7 +72,7 @@
     root: '/',
     scheme: 'Gemini',
     version: '7.1.0',
-    sidebar: {"position":"left","width":120,"display":"post","offset":12,"onmobile":false,"dimmer":false},
+    sidebar: {"position":"left","width":150,"display":"post","offset":12,"onmobile":false,"dimmer":false},
     back2top: true,
     back2top_sidebar: false,
     fancybox: false,
@@ -109,8 +109,6 @@
 <meta name="twitter:description" content="使用场景有的时候我们需要在一个activity1中销毁另一个制定的activity2。或者是在程序的某个位置销毁所有的activity，达到退出整个app的目的 我在网上找到一个做法，考虑的很严谨，在stack里存的不是activity，而是WeakReference。作者的愿意是担心出现有activity被finish之后ActivityMannager却忘了通知的情况，然后就是内存泄露 。。这">
 
 
-
-  <link rel="alternate" href="/atom.xml" title="BrightStone" type="application/atom+xml">
 
 
 
@@ -223,6 +221,23 @@
     
 
     <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
 
   </li>
         
@@ -605,13 +620,6 @@
             </nav>
           
 
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
           
 
           
