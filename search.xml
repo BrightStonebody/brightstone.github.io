@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Activity class {} does not exist]]></title>
+    <url>%2F2019%2F04%2F16%2FAndroid%2FActivity-class-does-not-exist%2F</url>
+    <content type="text"><![CDATA[Activity class {} does not exist有时候真机调试，在手机上卸载调试的APP就会出现上述的问题。 解决办法：使用adb命令1adb uninstall [包名] 估计可能是调试的APP没有彻底卸载造成的。]]></content>
+      <categories>
+        <category>Android</category>
+        <category>AndroidStudio</category>
+      </categories>
+      <tags>
+        <tag>AndroidStudio</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[MVP模式防止内存泄露]]></title>
     <url>%2F2019%2F04%2F15%2FMVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%2F</url>
-    <content type="text"><![CDATA[MVP模式防止内存泄露参考链接https://jocherch.github.io/mvp/mvp-memory-leak/https://blog.csdn.net/Xiong_IT/article/details/52610729 发生内存泄露的原因由于Presenter经常性地需要执行一些耗时的操作，例如，我们经常使用的网络请求数据。当 Presenter 持有了 Activity 的强引用，如果在请求结束之前，Activity 被销毁了，那么由于网络请求还没有返回，导致 Presenter 一直持有 Activity 对象的引用，使得该对象无法被系统回收，此时就发生了内存泄露。 解决方案：通过弱引用和 Activity / Fragment 的生命周期来解决这个问题。 Model12345interface BaseMvpModel&#123; public void mvpCancleTasks(); // TODO 终止线程池ThreadPool.shutDown()，AsyncTask.cancle()，或者调用框架的取消任务api &#125; View123456789101112interface BaseMvpView&#123; public void mvpDetachView(); /* 例如 @Override public void onDestroy() &#123; super.onDestroy(); mPresenter.mvpDestroy(); mPresenter = null; &#125; */&#125; Presenter123456789101112interface BaseMvpPresenter&#123; public void mvpDestory(); /*例如: public void mvpDestory() &#123; view = null; if(modle != null) &#123; modle.mvpaCncleTasks(); modle = null; &#125; &#125; */&#125; 这里只是创建了一个BaseInterface用于让mvp的接口去继承，没有做更加详细的封装，仅仅由于提示。主要是不同的模块处理可能会有不同的操作注意要使用WeakReference并不是在任何情况下Activity的onDestroy都会被调用（其它原因导致Activity对象还在被引用，就不会回调onDestroy方法），一旦这种情况发生，弱引用也能够保证不会造成内存泄露。]]></content>
+    <content type="text"><![CDATA[MVP模式防止内存泄露参考链接https://jocherch.github.io/mvp/mvp-memory-leak/https://blog.csdn.net/Xiong_IT/article/details/52610729 发生内存泄露的原因由于Presenter经常性地需要执行一些耗时的操作，例如，我们经常使用的网络请求数据。当 Presenter 持有了 Activity 的强引用，如果在请求结束之前，Activity 被销毁了，那么由于网络请求还没有返回，导致 Presenter 一直持有 Activity 对象的引用，使得该对象无法被系统回收，此时就发生了内存泄露。 解决方案：通过弱引用和 Activity / Fragment 的生命周期来解决这个问题。 Model12345interface BaseMvpModel&#123; public void mvpCancleTasks(); // TODO 终止线程池ThreadPool.shutDown()，AsyncTask.cancle()，或者调用框架的取消任务api &#125; View123456789101112interface BaseMvpView&#123; public void mvpDetachView(); /* 例如 @Override public void onDestroy() &#123; super.onDestroy(); mPresenter.mvpDestroy(); mPresenter = null; &#125; */&#125; Presenter123456789101112interface BaseMvpPresenter&#123; public void mvpDestory(); /*例如: public void mvpDestory() &#123; view = null; if(modle != null) &#123; modle.mvpaCncleTasks(); modle = null; &#125; &#125; */&#125; 这里只是创建了一个BaseInterface用于让mvp的接口去继承，没有做更加详细的封装，仅仅由于提示。主要是不同的模块处理可能会有不同的操作 注意要使用WeakReference并不是在任何情况下Activity的onDestroy都会被调用（其它原因导致Activity对象还在被引用，就不会回调onDestroy方法），一旦这种情况发生，弱引用也能够保证不会造成内存泄露。]]></content>
       <categories>
         <category>Android</category>
       </categories>
