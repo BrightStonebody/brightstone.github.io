@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[华为手机的内存泄露]]></title>
+    <url>%2F2019%2F04%2F19%2FAndroid%2F%E5%8D%8E%E4%B8%BA%E6%89%8B%E6%9C%BA%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%2F</url>
+    <content type="text"><![CDATA[华为手机的内存泄露最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。 我的手机系统是华为EMUI9.0 &amp;&amp; Android9.0 以下是我找到的网上的解决方案： 参考链接https://www.jianshu.com/p/95242060320f inputMethodManager.mLastSrvView泄露123456789101112131415161718192021222324252627282930313233public class FixMemLeak &#123; private static Field field; private static boolean hasField = true; public static void fixLeak(Context context) &#123; if (!hasField) &#123; return; &#125; InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE); if (imm == null) &#123; return; &#125; String[] arr = new String[]&#123;"mLastSrvView"&#125;; for (String param : arr) &#123; try &#123; if (field == null) &#123; field = imm.getClass().getDeclaredField(param); &#125; if (field == null) &#123; hasField = false; &#125; if (field != null) &#123; field.setAccessible(true); field.set(imm, null); &#125; &#125; catch (Throwable t) &#123; t.printStackTrace(); &#125; &#125; &#125;&#125; 在BaseActivity的onDestroy()方法里执行这个fexLeak()方法，然后所有的Activity继承BaseActivity。然后就没有报错了 Toast$TN.mWM 泄露泄露出现在显示一个Toast之后。这个就更迷了，网上我没有找到相关的解释。同样的在模拟器上没有出现这样的内存泄露。 最终的解决方法是：在使用Toast时，传入的Context参数使用ApplicationContext而不是Activity。然后就没有内存泄露报出了。]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>内存泄露</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Activity class {} does not exist]]></title>
     <url>%2F2019%2F04%2F16%2FAndroid%2FActivity-class-does-not-exist%2F</url>
     <content type="text"><![CDATA[Activity class {} does not exist有时候真机调试，在手机上卸载调试的APP就会出现上述的问题。 解决办法：使用adb命令1adb uninstall [包名] 估计可能是调试的APP没有彻底卸载造成的。]]></content>
@@ -14,14 +25,14 @@
   </entry>
   <entry>
     <title><![CDATA[MVP模式防止内存泄露]]></title>
-    <url>%2F2019%2F04%2F15%2FMVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%2F</url>
+    <url>%2F2019%2F04%2F15%2FAndroid%2FMVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%2F</url>
     <content type="text"><![CDATA[MVP模式防止内存泄露参考链接https://jocherch.github.io/mvp/mvp-memory-leak/https://blog.csdn.net/Xiong_IT/article/details/52610729 发生内存泄露的原因由于Presenter经常性地需要执行一些耗时的操作，例如，我们经常使用的网络请求数据。当 Presenter 持有了 Activity 的强引用，如果在请求结束之前，Activity 被销毁了，那么由于网络请求还没有返回，导致 Presenter 一直持有 Activity 对象的引用，使得该对象无法被系统回收，此时就发生了内存泄露。 解决方案：通过弱引用和 Activity / Fragment 的生命周期来解决这个问题。 Model12345interface BaseMvpModel&#123; public void mvpCancleTasks(); // TODO 终止线程池ThreadPool.shutDown()，AsyncTask.cancle()，或者调用框架的取消任务api &#125; View123456789101112interface BaseMvpView&#123; public void mvpDetachView(); /* 例如 @Override public void onDestroy() &#123; super.onDestroy(); mPresenter.mvpDestroy(); mPresenter = null; &#125; */&#125; Presenter123456789101112interface BaseMvpPresenter&#123; public void mvpDestory(); /*例如: public void mvpDestory() &#123; view = null; if(modle != null) &#123; modle.mvpaCncleTasks(); modle = null; &#125; &#125; */&#125; 这里只是创建了一个BaseInterface用于让mvp的接口去继承，没有做更加详细的封装，仅仅由于提示。主要是不同的模块处理可能会有不同的操作 注意要使用WeakReference并不是在任何情况下Activity的onDestroy都会被调用（其它原因导致Activity对象还在被引用，就不会回调onDestroy方法），一旦这种情况发生，弱引用也能够保证不会造成内存泄露。]]></content>
       <categories>
         <category>Android</category>
       </categories>
       <tags>
-        <tag>MVP</tag>
         <tag>内存泄露</tag>
+        <tag>MVP</tag>
       </tags>
   </entry>
   <entry>
@@ -55,8 +66,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>内存泄露</tag>
         <tag>Handler</tag>
+        <tag>内存泄露</tag>
       </tags>
   </entry>
   <entry>

@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-04-16T13:10:51.315Z</updated>
+  <updated>2019-04-19T03:55:24.461Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>华为手机的内存泄露</title>
+    <link href="http://yoursite.com/2019/04/19/Android/%E5%8D%8E%E4%B8%BA%E6%89%8B%E6%9C%BA%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    <id>http://yoursite.com/2019/04/19/Android/华为手机的内存泄露/</id>
+    <published>2019-04-19T03:41:06.000Z</published>
+    <updated>2019-04-19T03:55:24.461Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="华为手机的内存泄露"><a href="#华为手机的内存泄露" class="headerlink" title="华为手机的内存泄露"></a>华为手机的内存泄露</h1><p>最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。<br>一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。<br>然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。</p><p>我的手机系统是华为EMUI9.0  &amp;&amp;  Android9.0</p><p>以下是我找到的网上的解决方案：</p><h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.jianshu.com/p/95242060320f" target="_blank" rel="noopener">https://www.jianshu.com/p/95242060320f</a></p><h3 id="inputMethodManager-mLastSrvView泄露"><a href="#inputMethodManager-mLastSrvView泄露" class="headerlink" title="inputMethodManager.mLastSrvView泄露"></a>inputMethodManager.mLastSrvView泄露</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FixMemLeak</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Field field;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> hasField = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fixLeak</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasField) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);</span><br><span class="line">        <span class="keyword">if</span> (imm == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] arr = <span class="keyword">new</span> String[]&#123;<span class="string">"mLastSrvView"</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (String param : arr) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (field == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    field = imm.getClass().getDeclaredField(param);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (field == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    hasField = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (field != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    field.set(imm, <span class="keyword">null</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                t.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>在BaseActivity的onDestroy()方法里执行这个fexLeak()方法，然后所有的Activity继承BaseActivity。然后就没有报错了</p><h3 id="Toast-TN-mWM-泄露"><a href="#Toast-TN-mWM-泄露" class="headerlink" title="Toast$TN.mWM 泄露"></a>Toast$TN.mWM 泄露</h3><p>泄露出现在显示一个Toast之后。这个就更迷了，网上我没有找到相关的解释。同样的在模拟器上没有出现这样的内存泄露。</p><p>最终的解决方法是：<br>在使用Toast时，传入的Context参数使用ApplicationContext而不是Activity。然后就没有内存泄露报出了。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;华为手机的内存泄露&quot;&gt;&lt;a href=&quot;#华为手机的内存泄露&quot; class=&quot;headerlink&quot; title=&quot;华为手机的内存泄露&quot;&gt;&lt;/a&gt;华为手机的内存泄露&lt;/h1&gt;&lt;p&gt;最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露
+      
+    
+    </summary>
+    
+      <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
+    
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    
+  </entry>
   
   <entry>
     <title>Activity class {} does not exist</title>
@@ -45,10 +70,10 @@
   
   <entry>
     <title>MVP模式防止内存泄露</title>
-    <link href="http://yoursite.com/2019/04/15/MVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    <id>http://yoursite.com/2019/04/15/MVP模式防止内存泄露/</id>
+    <link href="http://yoursite.com/2019/04/15/Android/MVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    <id>http://yoursite.com/2019/04/15/Android/MVP模式防止内存泄露/</id>
     <published>2019-04-15T00:54:27.000Z</published>
-    <updated>2019-04-15T07:56:48.221Z</updated>
+    <updated>2019-04-19T03:41:23.013Z</updated>
     
     <content type="html"><![CDATA[<h1 id="MVP模式防止内存泄露"><a href="#MVP模式防止内存泄露" class="headerlink" title="MVP模式防止内存泄露"></a>MVP模式防止内存泄露</h1><h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://jocherch.github.io/mvp/mvp-memory-leak/" target="_blank" rel="noopener">https://jocherch.github.io/mvp/mvp-memory-leak/</a><br><a href="https://blog.csdn.net/Xiong_IT/article/details/52610729" target="_blank" rel="noopener">https://blog.csdn.net/Xiong_IT/article/details/52610729</a></p><h3 id="发生内存泄露的原因"><a href="#发生内存泄露的原因" class="headerlink" title="发生内存泄露的原因"></a>发生内存泄露的原因</h3><p>由于Presenter经常性地需要执行一些耗时的操作，例如，我们经常使用的网络请求数据。当 Presenter 持有了 Activity 的强引用，如果在请求结束之前，Activity 被销毁了，那么由于网络请求还没有返回，导致 Presenter 一直持有 Activity 对象的引用，使得该对象无法被系统回收，此时就发生了内存泄露。</p><p><strong>解决方案：通过弱引用和 Activity / Fragment 的生命周期来解决这个问题。</strong></p><p><strong>Model</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">BaseMvpModel</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mvpCancleTasks</span><span class="params">()</span></span>;</span><br><span class="line">        <span class="comment">// TODO 终止线程池ThreadPool.shutDown()，AsyncTask.cancle()，或者调用框架的取消任务api</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p><strong>View</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">BaseMvpView</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mvpDetachView</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">        例如</span></span><br><span class="line"><span class="comment">        @Override</span></span><br><span class="line"><span class="comment">        public void onDestroy() &#123;</span></span><br><span class="line"><span class="comment">            super.onDestroy();</span></span><br><span class="line"><span class="comment">            mPresenter.mvpDestroy();</span></span><br><span class="line"><span class="comment">            mPresenter = null;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p><strong>Presenter</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">BaseMvpPresenter</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">mvpDestory</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">/*例如:</span></span><br><span class="line"><span class="comment">        public void mvpDestory() &#123;</span></span><br><span class="line"><span class="comment">            view = null;</span></span><br><span class="line"><span class="comment">            if(modle != null) &#123;</span></span><br><span class="line"><span class="comment">                modle.mvpaCncleTasks();</span></span><br><span class="line"><span class="comment">                modle = null;</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">        &#125;</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p><p>这里只是创建了一个BaseInterface用于让mvp的接口去继承，没有做更加详细的封装，仅仅由于提示。主要是不同的模块处理可能会有不同的操作</p><p><strong>注意要使用WeakReference</strong><br>并不是在任何情况下Activity的onDestroy都会被调用（其它原因导致Activity对象还在被引用，就不会回调onDestroy方法），一旦这种情况发生，弱引用也能够保证不会造成内存泄露。</p>]]></content>
     
@@ -64,9 +89,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
-    
       <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    
+      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
     
   </entry>
   
@@ -143,9 +168,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    
       <category term="Handler" scheme="http://yoursite.com/tags/Handler/"/>
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
