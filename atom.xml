@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-05-02T12:01:52.678Z</updated>
+  <updated>2019-05-04T03:26:32.588Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>mysql配置远程登录</title>
+    <link href="http://yoursite.com/2019/05/04/Linux/mysql%E9%85%8D%E7%BD%AE%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95/"/>
+    <id>http://yoursite.com/2019/05/04/Linux/mysql配置远程登录/</id>
+    <published>2019-05-04T03:04:44.000Z</published>
+    <updated>2019-05-04T03:26:32.588Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="mysql配置远程登录"><a href="#mysql配置远程登录" class="headerlink" title="mysql配置远程登录"></a>mysql配置远程登录</h1><h4 id="1、给用户远程登录权限："><a href="#1、给用户远程登录权限：" class="headerlink" title="1、给用户远程登录权限："></a>1、给用户远程登录权限：</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges  on *.* to root@'%' identified by "password";</span><br><span class="line"></span><br><span class="line">FLUSH PRIVILEGES</span><br></pre></td></tr></table></figure><p>root可以替换为其他用户名， %表示任意ip， 也可以换成指定的ip， password替换成密码</p><p>使用以下命令可以查看用户的登录权限<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select host,user,password from user;</span><br></pre></td></tr></table></figure></p><h4 id="2、-lnmp环境配置iptables"><a href="#2、-lnmp环境配置iptables" class="headerlink" title="2、 lnmp环境配置iptables"></a>2、 lnmp环境配置iptables</h4><p>lnmp一键安装环境默认是禁用iptables远程登录的，</p><ul><li>查看iptables规则：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -L -n --line-numbers</span><br></pre></td></tr></table></figure></li></ul><p>输入样例如下：<br><img src="/images/mysql_iptables.png" alt="图片"><br>可以看到3306端口的target为drop</p><ul><li>删除对应的drop规则</li></ul><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">iptables -D INPUT 5</span><br></pre></td></tr></table></figure><p>iptables的使用参考：<br><a href>https://www.vpser.net/security/linux-iptables.html</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;mysql配置远程登录&quot;&gt;&lt;a href=&quot;#mysql配置远程登录&quot; class=&quot;headerlink&quot; title=&quot;mysql配置远程登录&quot;&gt;&lt;/a&gt;mysql配置远程登录&lt;/h1&gt;&lt;h4 id=&quot;1、给用户远程登录权限：&quot;&gt;&lt;a href=&quot;#1、给用户
+      
+    
+    </summary>
+    
+      <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
+    
+    
+      <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
+    
+      <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
+    
+  </entry>
   
   <entry>
     <title>apt常用命令</title>
@@ -112,9 +139,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    
       <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
