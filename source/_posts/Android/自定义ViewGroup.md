@@ -50,7 +50,7 @@ public class FlowLayout extends ViewGroup {
         //计算child的大小
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
-            //measureChildWithMargins方法在计算时似乎考虑到了padding, 所以这里widthUsed参数设置为0
+            //measureChildWithMargins方法在计算时已经考虑到了padding, 所以这里widthUsed参数设置为0
             //这里为了支持margin，所以用measureChildWithMargins方法
             measureChildWithMargins(child,
                     widthMeasureSpec, 0,
@@ -91,7 +91,6 @@ public class FlowLayout extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int width = getMeasuredWidth() - getPaddingStart() - getPaddingEnd();
-        //cur_l, cur_t 计算时不包含padding
         int used_width = 0;
         int used_height = 0;
 
@@ -106,7 +105,6 @@ public class FlowLayout extends ViewGroup {
             //layout时的位置，必须考虑padding
             int layout_l, layout_t, layout_r, layout_b;
             if (used_width + child_width <= width) {
-                // base_l, base_t 代表该view的左上角坐标
                 layout_l = getPaddingStart() + used_width + mlp.leftMargin;
                 layout_t = getPaddingTop() + used_height + mlp.topMargin;
                 layout_r = layout_l + child_view.getMeasuredWidth();
