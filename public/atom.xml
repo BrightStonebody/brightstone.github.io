@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-07-04T13:11:22.661Z</updated>
+  <updated>2019-07-09T09:30:05.618Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>RecyclerView设置item的间距</title>
+    <link href="http://yoursite.com/2019/07/09/Android/RecyclerView%E8%AE%BE%E7%BD%AEitem%E7%9A%84%E9%97%B4%E8%B7%9D/"/>
+    <id>http://yoursite.com/2019/07/09/Android/RecyclerView设置item的间距/</id>
+    <published>2019-07-09T09:29:55.000Z</published>
+    <updated>2019-07-09T09:30:05.618Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>startService()和bindService()</title>
@@ -191,9 +205,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    
       <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
@@ -270,9 +284,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="Handler" scheme="http://yoursite.com/tags/Handler/"/>
-    
       <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    
+      <category term="Handler" scheme="http://yoursite.com/tags/Handler/"/>
     
   </entry>
   
