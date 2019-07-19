@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-07-09T09:30:05.618Z</updated>
+  <updated>2019-07-19T03:20:27.433Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,16 +17,54 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Text相关计算</title>
+    <link href="http://yoursite.com/2019/07/19/Android/Text%E7%9B%B8%E5%85%B3%E8%AE%A1%E7%AE%97/"/>
+    <id>http://yoursite.com/2019/07/19/Android/Text相关计算/</id>
+    <published>2019-07-19T03:09:42.000Z</published>
+    <updated>2019-07-19T03:20:27.433Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Text相关计算"><a href="#Text相关计算" class="headerlink" title="Text相关计算"></a>Text相关计算</h1><h2 id="Text的相关属性"><a href="#Text的相关属性" class="headerlink" title="Text的相关属性"></a>Text的相关属性</h2><p><img src="/images/Text相关计算" alt="图片"></p><p>Baseline上方的值为正，下方的值为负</p><h2 id="TextSize和TextView大小的转换"><a href="#TextSize和TextView大小的转换" class="headerlink" title="TextSize和TextView大小的转换"></a>TextSize和TextView大小的转换</h2><p>相关参数包括：</p><ul><li><p>所使用字体(fallback的话不影响)的UPM(Units Per EM)</p></li><li><p>ascent/descent属性</p></li><li><p>top/bottom参数</p></li></ul><p><strong>禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize</strong></p><p><strong>开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize</strong></p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/1728b725b4a6" target="_blank" rel="noopener">Paint 绘制文字属性</a><br><a href="https://neutra.github.io/2016/TextView%E6%96%87%E5%AD%97%E5%AE%9E%E9%99%85%E9%AB%98%E5%BA%A6%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">TextView文字实际高度分析</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Text相关计算&quot;&gt;&lt;a href=&quot;#Text相关计算&quot; class=&quot;headerlink&quot; title=&quot;Text相关计算&quot;&gt;&lt;/a&gt;Text相关计算&lt;/h1&gt;&lt;h2 id=&quot;Text的相关属性&quot;&gt;&lt;a href=&quot;#Text的相关属性&quot; class=&quot;he
+      
+    
+    </summary>
+    
+      <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
+    
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
+    
+  </entry>
+  
+  <entry>
     <title>RecyclerView设置item的间距</title>
     <link href="http://yoursite.com/2019/07/09/Android/RecyclerView%E8%AE%BE%E7%BD%AEitem%E7%9A%84%E9%97%B4%E8%B7%9D/"/>
     <id>http://yoursite.com/2019/07/09/Android/RecyclerView设置item的间距/</id>
     <published>2019-07-09T09:29:55.000Z</published>
-    <updated>2019-07-09T09:30:05.618Z</updated>
+    <updated>2019-07-10T07:00:36.563Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="RecyclerView设置item的间距"><a href="#RecyclerView设置item的间距" class="headerlink" title="RecyclerView设置item的间距"></a>RecyclerView设置item的间距</h1><h2 id="关于GridLayoutManager"><a href="#关于GridLayoutManager" class="headerlink" title="关于GridLayoutManager"></a>关于GridLayoutManager</h2><p>当一个RecyclerView设置了一个GridLayoutManager(this,count)，并且count为4的时候，<strong>实际上就是将屏幕均分为四份，每一份都是180px宽</strong>（以720px为例，我们只考虑左右，暂不考虑上下，原理是相同的），如果不设置ItemDecoration，那么默认item由左开始布置。</p><h2 id="自定义ItemDecoration"><a href="#自定义ItemDecoration" class="headerlink" title="自定义ItemDecoration"></a>自定义ItemDecoration</h2><h3 id="getItemOffsets方法"><a href="#getItemOffsets方法" class="headerlink" title="getItemOffsets方法"></a>getItemOffsets方法</h3><p>设置ItemView的内嵌偏移长度</p><p>ItemView 外面会包裹着一个矩形（outRect）<br>内嵌偏移长度 是指：该矩形（outRect）与 ItemView的间隔<br>相当于为item添加了padding</p><p><strong>常用的getItemOffsets的计算</strong></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 是item在GridLayoutManager中居中显示，并且item之间的间距，每列第一个item和每列最后一个item到recyclerview边界的距离都相等</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmojiItemDecoration</span> <span class="keyword">extends</span> <span class="title">RecyclerView</span>.<span class="title">ItemDecoration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mNumColumn;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mVerticalSpacing;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mItemWidth;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mItemHorizontalSpacing;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mInitSpacing = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">EmojiItemDecoration</span><span class="params">(<span class="keyword">int</span> column, <span class="keyword">int</span> itemWidth, <span class="keyword">int</span> verticalSpacing)</span> </span>&#123;</span><br><span class="line">        mNumColumn = column;</span><br><span class="line">        mItemWidth = itemWidth;</span><br><span class="line">        mVerticalSpacing = verticalSpacing;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getItemOffsets</span><span class="params">(Rect outRect, View view, RecyclerView parent, RecyclerView.State state)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!mInitSpacing) &#123;</span><br><span class="line">            mInitSpacing = <span class="keyword">true</span>;</span><br><span class="line">            <span class="keyword">int</span> parentWidth = parent.getWidth();</span><br><span class="line"></span><br><span class="line">            mItemHorizontalSpacing = (parentWidth - parent.getPaddingLeft() - parent.getPaddingRight() - mItemWidth * mNumColumn) / (mNumColumn + <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> position = parent.getChildAdapterPosition(view);</span><br><span class="line">        <span class="keyword">int</span> column = position % mNumColumn;</span><br><span class="line"></span><br><span class="line">        outRect.left = (mNumColumn - column) * mItemHorizontalSpacing / mNumColumn;</span><br><span class="line">        outRect.right = (column + <span class="number">1</span>) * mItemHorizontalSpacing / mNumColumn;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (position &lt; mNumColumn) &#123;</span><br><span class="line">            outRect.top = Dimensions.pxFromDp(<span class="number">12</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (position &gt;= mNumColumn) &#123;</span><br><span class="line">            outRect.top = mVerticalSpacing;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
     
     <summary type="html">
     
+      
+      
+        &lt;h1 id=&quot;RecyclerView设置item的间距&quot;&gt;&lt;a href=&quot;#RecyclerView设置item的间距&quot; class=&quot;headerlink&quot; title=&quot;RecyclerView设置item的间距&quot;&gt;&lt;/a&gt;RecyclerView设置item的间距&lt;/
+      
+    
     </summary>
     
+      <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
+    
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
+    
+      <category term="RecyclerView" scheme="http://yoursite.com/tags/RecyclerView/"/>
     
   </entry>
   
@@ -103,9 +141,9 @@
       <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
     
     
-      <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
-    
       <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
+    
+      <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
     
   </entry>
   

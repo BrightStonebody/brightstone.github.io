@@ -1,9 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Text相关计算]]></title>
+    <url>%2F2019%2F07%2F19%2FAndroid%2FText%E7%9B%B8%E5%85%B3%E8%AE%A1%E7%AE%97%2F</url>
+    <content type="text"><![CDATA[Text相关计算Text的相关属性 Baseline上方的值为正，下方的值为负 TextSize和TextView大小的转换相关参数包括： 所使用字体(fallback的话不影响)的UPM(Units Per EM) ascent/descent属性 top/bottom参数 禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize 开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize 参考Paint 绘制文字属性TextView文字实际高度分析]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>View</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[RecyclerView设置item的间距]]></title>
     <url>%2F2019%2F07%2F09%2FAndroid%2FRecyclerView%E8%AE%BE%E7%BD%AEitem%E7%9A%84%E9%97%B4%E8%B7%9D%2F</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[RecyclerView设置item的间距关于GridLayoutManager当一个RecyclerView设置了一个GridLayoutManager(this,count)，并且count为4的时候，实际上就是将屏幕均分为四份，每一份都是180px宽（以720px为例，我们只考虑左右，暂不考虑上下，原理是相同的），如果不设置ItemDecoration，那么默认item由左开始布置。 自定义ItemDecorationgetItemOffsets方法设置ItemView的内嵌偏移长度 ItemView 外面会包裹着一个矩形（outRect）内嵌偏移长度 是指：该矩形（outRect）与 ItemView的间隔相当于为item添加了padding 常用的getItemOffsets的计算 123456789101112131415161718192021222324252627282930313233343536373839// 是item在GridLayoutManager中居中显示，并且item之间的间距，每列第一个item和每列最后一个item到recyclerview边界的距离都相等public class EmojiItemDecoration extends RecyclerView.ItemDecoration &#123; private int mNumColumn; private int mVerticalSpacing; private int mItemWidth; private int mItemHorizontalSpacing; private boolean mInitSpacing = false; public EmojiItemDecoration(int column, int itemWidth, int verticalSpacing) &#123; mNumColumn = column; mItemWidth = itemWidth; mVerticalSpacing = verticalSpacing; &#125; @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) &#123; if (!mInitSpacing) &#123; mInitSpacing = true; int parentWidth = parent.getWidth(); mItemHorizontalSpacing = (parentWidth - parent.getPaddingLeft() - parent.getPaddingRight() - mItemWidth * mNumColumn) / (mNumColumn + 1); &#125; int position = parent.getChildAdapterPosition(view); int column = position % mNumColumn; outRect.left = (mNumColumn - column) * mItemHorizontalSpacing / mNumColumn; outRect.right = (column + 1) * mItemHorizontalSpacing / mNumColumn; if (position &lt; mNumColumn) &#123; outRect.top = Dimensions.pxFromDp(12); &#125; if (position &gt;= mNumColumn) &#123; outRect.top = mVerticalSpacing; &#125; &#125;&#125;]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>View</tag>
+        <tag>RecyclerView</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[startService()和bindService()]]></title>
@@ -36,8 +54,8 @@
         <category>Linux</category>
       </categories>
       <tags>
-        <tag>Linux</tag>
         <tag>mysql</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
   <entry>
