@@ -3,7 +3,14 @@
   <entry>
     <title><![CDATA[ThreadLocal]]></title>
     <url>%2F2019%2F07%2F22%2FJava%2FThreadLocal%2F</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[ThreadLocal作用当使用ThreadLocal维护变量时，ThreadLocal为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立的改变自己的副本，而不会影响其他线程所对应的副本。从线程的角度来看，目标变量就像是本地变量 源码分析set()12345678public void set(T value) &#123; Thread t = Thread.currentThread(); ThreadLocalMap map = getMap(t); if (map != null) map.set(this, value); else createMap(t, value); &#125; createMap()方法：123void createMap(Thread t, T firstValue) &#123; t.threadLocals = new ThreadLocalMap(this, firstValue); &#125; 查看Thread类的代码：123/* ThreadLocal values pertaining to this thread. This map is maintained * by the ThreadLocal class. */ ThreadLocal.ThreadLocalMap threadLocals = null; Thread类中有一个Thread.ThreadLocalMap成员变量。也就是说，ThreadLocal的set方法，实质是在Thread的threadlocals成员中添加value get()方法12345678910111213public T get() &#123; Thread t = Thread.currentThread(); ThreadLocalMap map = getMap(t); if (map != null) &#123; ThreadLocalMap.Entry e = map.getEntry(this); if (e != null) &#123; @SuppressWarnings("unchecked") T result = (T)e.value; return result; &#125; &#125; return setInitialValue(); &#125; 其中的ThreadLocalMap.Entry123456789static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123; /** The value associated with this ThreadLocal. */ Object value; Entry(ThreadLocal&lt;?&gt; k, Object v) &#123; super(k); value = v; &#125; &#125; Entry中的key时ThreadLocal的弱引用， 所以在ThreadLocal的get方法中map.getEntry(this)传入的是自己 总结Thread类中有一个ThreadLocalMap成员对象，这个变量在Thread类中并没有使用，只有在ThreadLocal类中才有用到。ThreadLocalMap里的Entry固定为ThreadLocal的弱引用。也就是说ThreadLocal是将value存储到Thread中，调用get和set方法是，先得到当前的Thread线程对象，获取到thread中的map，在以自己为key获取到value值]]></content>
+      <categories>
+        <category>java</category>
+        <category>多线程</category>
+      </categories>
+      <tags>
+        <tag>多线程</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[Text相关计算]]></title>
@@ -102,8 +109,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>内存泄露</tag>
         <tag>MVP</tag>
+        <tag>内存泄露</tag>
       </tags>
   </entry>
   <entry>
@@ -137,8 +144,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>Handler</tag>
         <tag>内存泄露</tag>
+        <tag>Handler</tag>
       </tags>
   </entry>
   <entry>
