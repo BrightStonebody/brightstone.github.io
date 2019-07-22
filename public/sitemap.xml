@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2019/07/22/Java/ThreadLocal/</loc>
+    
+    <lastmod>2019-07-22T05:58:00.079Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2019/07/19/Android/Text%E7%9B%B8%E5%85%B3%E8%AE%A1%E7%AE%97/</loc>
     
     <lastmod>2019-07-19T03:20:27.433Z</lastmod>

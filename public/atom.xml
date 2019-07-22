@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-07-19T03:20:27.433Z</updated>
+  <updated>2019-07-22T05:58:00.079Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,20 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ThreadLocal</title>
+    <link href="http://yoursite.com/2019/07/22/Java/ThreadLocal/"/>
+    <id>http://yoursite.com/2019/07/22/Java/ThreadLocal/</id>
+    <published>2019-07-22T05:57:12.000Z</published>
+    <updated>2019-07-22T05:58:00.079Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>Text相关计算</title>
@@ -141,9 +155,9 @@
       <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
     
     
-      <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
-    
       <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
+    
+      <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
     
   </entry>
   
@@ -243,9 +257,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
-    
       <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    
+      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
     
   </entry>
   
@@ -322,9 +336,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    
       <category term="Handler" scheme="http://yoursite.com/tags/Handler/"/>
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
