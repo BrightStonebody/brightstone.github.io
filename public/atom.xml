@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-07-22T06:40:53.486Z</updated>
+  <updated>2019-08-02T01:59:12.678Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Scale动画组合使用的坑</title>
+    <link href="http://yoursite.com/2019/08/02/Android/Scale%E5%8A%A8%E7%94%BB%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E5%9D%91/"/>
+    <id>http://yoursite.com/2019/08/02/Android/Scale动画组合使用的坑/</id>
+    <published>2019-08-02T01:43:37.000Z</published>
+    <updated>2019-08-02T01:59:12.678Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="Scale动画组合使用的坑"><a href="#Scale动画组合使用的坑" class="headerlink" title="Scale动画组合使用的坑"></a>Scale动画组合使用的坑</h1><h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br></pre></td></tr></table></figure><p>参数1: X的初始值<br>参数2: X的最终值<br>参数3: Y的初始值<br>参数4: Y的最终值<br>参数5: X轴，Animation.RELATIVE_TO_SELF表示根据view大小的百分比进行缩放<br>参数6: X轴缩放轴点，1f表示以View的最右端为轴点<br>参数7: Y轴，同参数5<br>参数8: Y轴，同参数6</p><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一个补间动画AnimationSet中有两个ScaleAnimation，先放大后缩小<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// start animation</span></span><br><span class="line">        AnimationSet animationSet = <span class="keyword">new</span> AnimationSet(<span class="keyword">false</span>);</span><br><span class="line">        Animation alpha = <span class="keyword">new</span> AlphaAnimation(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        alpha.setDuration(<span class="number">80</span>);</span><br><span class="line">        Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale.setDuration(<span class="number">160</span>);</span><br><span class="line">        scale.setInterpolator(PathInterpolatorCompat.create(<span class="number">0.32f</span>, <span class="number">0.66f</span>, <span class="number">0.6f</span>, <span class="number">1f</span>));</span><br><span class="line">        Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">        scale2.setStartOffset(<span class="number">160</span>);</span><br><span class="line">        animationSet.addAnimation(scale);</span><br><span class="line">        animationSet.addAnimation(scale2);</span><br><span class="line">        animationSet.addAnimation(alpha);</span><br><span class="line">        tv.startAnimation(animationSet);</span><br></pre></td></tr></table></figure></p><p>但是最后的动画效果却非常不流畅，通过加长动画效果，发现动画在放大后缩回的过程中，缩一定程度后直接突变到了最初始的大小</p><h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>scale动画是根据当前的值进行缩放的，所以scale2应该改成这个样子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">scale2.setStartOffset(<span class="number">160</span>);</span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;Scale动画组合使用的坑&quot;&gt;&lt;a href=&quot;#Scale动画组合使用的坑&quot; class=&quot;headerlink&quot; title=&quot;Scale动画组合使用的坑&quot;&gt;&lt;/a&gt;Scale动画组合使用的坑&lt;/h1&gt;&lt;h2 id=&quot;API&quot;&gt;&lt;a href=&quot;#API&quot; c
+      
+    
+    </summary>
+    
+      <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
+    
+      <category term="View" scheme="http://yoursite.com/categories/Android/View/"/>
+    
+    
+      <category term="Animation" scheme="http://yoursite.com/tags/Animation/"/>
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
+    
+  </entry>
   
   <entry>
     <title>ThreadLocal</title>
@@ -48,9 +77,9 @@
     <link href="http://yoursite.com/2019/07/19/Android/Text%E7%9B%B8%E5%85%B3%E8%AE%A1%E7%AE%97/"/>
     <id>http://yoursite.com/2019/07/19/Android/Text相关计算/</id>
     <published>2019-07-19T03:09:42.000Z</published>
-    <updated>2019-07-19T03:20:27.433Z</updated>
+    <updated>2019-08-01T08:16:06.102Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="Text相关计算"><a href="#Text相关计算" class="headerlink" title="Text相关计算"></a>Text相关计算</h1><h2 id="Text的相关属性"><a href="#Text的相关属性" class="headerlink" title="Text的相关属性"></a>Text的相关属性</h2><p><img src="/images/Text相关计算" alt="图片"></p><p>Baseline上方的值为正，下方的值为负</p><h2 id="TextSize和TextView大小的转换"><a href="#TextSize和TextView大小的转换" class="headerlink" title="TextSize和TextView大小的转换"></a>TextSize和TextView大小的转换</h2><p>相关参数包括：</p><ul><li><p>所使用字体(fallback的话不影响)的UPM(Units Per EM)</p></li><li><p>ascent/descent属性</p></li><li><p>top/bottom参数</p></li></ul><p><strong>禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize</strong></p><p><strong>开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize</strong></p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/1728b725b4a6" target="_blank" rel="noopener">Paint 绘制文字属性</a><br><a href="https://neutra.github.io/2016/TextView%E6%96%87%E5%AD%97%E5%AE%9E%E9%99%85%E9%AB%98%E5%BA%A6%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">TextView文字实际高度分析</a></p>]]></content>
+    <content type="html"><![CDATA[<h1 id="Text相关计算"><a href="#Text相关计算" class="headerlink" title="Text相关计算"></a>Text相关计算</h1><h2 id="Text的相关属性"><a href="#Text的相关属性" class="headerlink" title="Text的相关属性"></a>Text的相关属性</h2><p><img src="/images/Text相关计算.webp" alt="图片"></p><p>Baseline上方的值为正，下方的值为负</p><h2 id="TextSize和TextView大小的转换"><a href="#TextSize和TextView大小的转换" class="headerlink" title="TextSize和TextView大小的转换"></a>TextSize和TextView大小的转换</h2><p>相关参数包括：</p><ul><li><p>所使用字体(fallback的话不影响)的UPM(Units Per EM)</p></li><li><p>ascent/descent属性</p></li><li><p>top/bottom参数</p></li></ul><p><strong>禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize</strong></p><p><strong>开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize</strong></p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/1728b725b4a6" target="_blank" rel="noopener">Paint 绘制文字属性</a><br><a href="https://neutra.github.io/2016/TextView%E6%96%87%E5%AD%97%E5%AE%9E%E9%99%85%E9%AB%98%E5%BA%A6%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">TextView文字实际高度分析</a></p>]]></content>
     
     <summary type="html">
     

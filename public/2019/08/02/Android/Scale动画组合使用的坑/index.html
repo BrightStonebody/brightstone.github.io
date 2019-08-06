@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="华为手机的内存泄露最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。 我的手机系统是华为EMUI9.0  &amp;amp;&amp;amp;">
-<meta name="keywords" content="内存泄露">
+  <meta name="description" content="Scale动画组合使用的坑API1Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); 参数1: X的初始值参数2: X的最终值参数3: Y的初始值参数4: Y的最终值参数5: X轴，Animatio">
+<meta name="keywords" content="Animation,View">
 <meta property="og:type" content="article">
-<meta property="og:title" content="华为手机的内存泄露">
-<meta property="og:url" content="http://yoursite.com/2019/04/19/Android/华为手机的内存泄露/index.html">
+<meta property="og:title" content="Scale动画组合使用的坑">
+<meta property="og:url" content="http://yoursite.com/2019/08/02/Android/Scale动画组合使用的坑/index.html">
 <meta property="og:site_name" content="BrightStone">
-<meta property="og:description" content="华为手机的内存泄露最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。 我的手机系统是华为EMUI9.0  &amp;amp;&amp;amp;">
+<meta property="og:description" content="Scale动画组合使用的坑API1Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); 参数1: X的初始值参数2: X的最终值参数3: Y的初始值参数4: Y的最终值参数5: X轴，Animatio">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-04-19T03:55:24.000Z">
+<meta property="og:updated_time" content="2019-08-02T01:59:12.678Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="华为手机的内存泄露">
-<meta name="twitter:description" content="华为手机的内存泄露最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。 我的手机系统是华为EMUI9.0  &amp;amp;&amp;amp;">
+<meta name="twitter:title" content="Scale动画组合使用的坑">
+<meta name="twitter:description" content="Scale动画组合使用的坑API1Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); 参数1: X的初始值参数2: X的最终值参数3: Y的初始值参数4: Y的最终值参数5: X轴，Animatio">
 
 
 
@@ -115,7 +115,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/2019/04/19/Android/华为手机的内存泄露/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/02/Android/Scale动画组合使用的坑/">
 
 
 
@@ -125,7 +125,7 @@
   };
 </script>
 
-  <title>华为手机的内存泄露 | BrightStone</title>
+  <title>Scale动画组合使用的坑 | BrightStone</title>
   
 
 
@@ -353,7 +353,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/19/Android/华为手机的内存泄露/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/02/Android/Scale动画组合使用的坑/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="BrightStone">
@@ -370,7 +370,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">华为手机的内存泄露
+          <h1 class="post-title" itemprop="name headline">Scale动画组合使用的坑
 
               
             
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="创建时间：2019-04-19 11:41:06 / 修改时间：11:55:24" itemprop="dateCreated datePublished" datetime="2019-04-19T11:41:06+08:00">2019-04-19</time>
+              <time title="创建时间：2019-08-02 09:43:37 / 修改时间：09:59:12" itemprop="dateCreated datePublished" datetime="2019-08-02T09:43:37+08:00">2019-08-02</time>
             
 
             
@@ -419,6 +419,13 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Android/View/" itemprop="url" rel="index"><span itemprop="name">View</span></a></span>
 
                 
                 
@@ -453,14 +460,11 @@
       
 
       
-        <h1 id="华为手机的内存泄露"><a href="#华为手机的内存泄露" class="headerlink" title="华为手机的内存泄露"></a>华为手机的内存泄露</h1><p>最近在开发的时候，使用我的华为手机做真机调试，发现LeakCanary一直有内存泄露报出。<br>一开始我以为是我使用MVP模式开发导致的，使用WeakReference和一些其他的处理之后，发现这个内存泄露还是存在。<br>然后我用模拟器调试，发现模拟器竟然没有内存泄漏报出。想到这可能是手机的问题。应该是国内手机厂商对系统的魔改造成的。</p>
-<p>我的手机系统是华为EMUI9.0  &amp;&amp;  Android9.0</p>
-<p>以下是我找到的网上的解决方案：</p>
-<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="https://www.jianshu.com/p/95242060320f" target="_blank" rel="noopener">https://www.jianshu.com/p/95242060320f</a></p>
-<h3 id="inputMethodManager-mLastSrvView泄露"><a href="#inputMethodManager-mLastSrvView泄露" class="headerlink" title="inputMethodManager.mLastSrvView泄露"></a>inputMethodManager.mLastSrvView泄露</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FixMemLeak</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Field field;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> hasField = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fixLeak</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!hasField) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);</span><br><span class="line">        <span class="keyword">if</span> (imm == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        String[] arr = <span class="keyword">new</span> String[]&#123;<span class="string">"mLastSrvView"</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (String param : arr) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (field == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    field = imm.getClass().getDeclaredField(param);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (field == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    hasField = <span class="keyword">false</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (field != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    field.set(imm, <span class="keyword">null</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">                t.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在BaseActivity的onDestroy()方法里执行这个fexLeak()方法，然后所有的Activity继承BaseActivity。然后就没有报错了</p>
-<h3 id="Toast-TN-mWM-泄露"><a href="#Toast-TN-mWM-泄露" class="headerlink" title="Toast$TN.mWM 泄露"></a>Toast$TN.mWM 泄露</h3><p>泄露出现在显示一个Toast之后。这个就更迷了，网上我没有找到相关的解释。同样的在模拟器上没有出现这样的内存泄露。</p>
-<p>最终的解决方法是：<br>在使用Toast时，传入的Context参数使用ApplicationContext而不是Activity。然后就没有内存泄露报出了。</p>
+        <h1 id="Scale动画组合使用的坑"><a href="#Scale动画组合使用的坑" class="headerlink" title="Scale动画组合使用的坑"></a>Scale动画组合使用的坑</h1><h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>参数1: X的初始值<br>参数2: X的最终值<br>参数3: Y的初始值<br>参数4: Y的最终值<br>参数5: X轴，Animation.RELATIVE_TO_SELF表示根据view大小的百分比进行缩放<br>参数6: X轴缩放轴点，1f表示以View的最右端为轴点<br>参数7: Y轴，同参数5<br>参数8: Y轴，同参数6</p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一个补间动画AnimationSet中有两个ScaleAnimation，先放大后缩小<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// start animation</span></span><br><span class="line">        AnimationSet animationSet = <span class="keyword">new</span> AnimationSet(<span class="keyword">false</span>);</span><br><span class="line">        Animation alpha = <span class="keyword">new</span> AlphaAnimation(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        alpha.setDuration(<span class="number">80</span>);</span><br><span class="line">        Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale.setDuration(<span class="number">160</span>);</span><br><span class="line">        scale.setInterpolator(PathInterpolatorCompat.create(<span class="number">0.32f</span>, <span class="number">0.66f</span>, <span class="number">0.6f</span>, <span class="number">1f</span>));</span><br><span class="line">        Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">        scale2.setStartOffset(<span class="number">160</span>);</span><br><span class="line">        animationSet.addAnimation(scale);</span><br><span class="line">        animationSet.addAnimation(scale2);</span><br><span class="line">        animationSet.addAnimation(alpha);</span><br><span class="line">        tv.startAnimation(animationSet);</span><br></pre></td></tr></table></figure></p>
+<p>但是最后的动画效果却非常不流畅，通过加长动画效果，发现动画在放大后缩回的过程中，缩一定程度后直接突变到了最初始的大小</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>scale动画是根据当前的值进行缩放的，所以scale2应该改成这个样子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">scale2.setStartOffset(<span class="number">160</span>);</span><br></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -484,7 +488,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/内存泄露/" rel="tag"># 内存泄露</a>
+            <a href="/tags/Animation/" rel="tag"># Animation</a>
+          
+            <a href="/tags/View/" rel="tag"># View</a>
           
         </div>
       
@@ -497,8 +503,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/16/Android/Activity-class-does-not-exist/" rel="next" title="Activity class {} does not exist">
-                <i class="fa fa-chevron-left"></i> Activity class {} does not exist
+              <a href="/2019/07/22/Java/ThreadLocal/" rel="next" title="ThreadLocal">
+                <i class="fa fa-chevron-left"></i> ThreadLocal
               </a>
             
           </div>
@@ -506,10 +512,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/05/02/Linux/apt常用命令/" rel="prev" title="apt常用命令">
-                apt常用命令 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -698,7 +700,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#华为手机的内存泄露"><span class="nav-number">1.</span> <span class="nav-text">华为手机的内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#参考链接"><span class="nav-number">1.0.1.</span> <span class="nav-text">参考链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#inputMethodManager-mLastSrvView泄露"><span class="nav-number">1.0.2.</span> <span class="nav-text">inputMethodManager.mLastSrvView泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Toast-TN-mWM-泄露"><span class="nav-number">1.0.3.</span> <span class="nav-text">Toast$TN.mWM 泄露</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Scale动画组合使用的坑"><span class="nav-number">1.</span> <span class="nav-text">Scale动画组合使用的坑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#API"><span class="nav-number">1.1.</span> <span class="nav-text">API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">1.2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原因"><span class="nav-number">1.3.</span> <span class="nav-text">原因</span></a></li></ol></li></ol></div>
             
 
           </div>

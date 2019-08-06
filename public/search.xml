@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Scale动画组合使用的坑]]></title>
+    <url>%2F2019%2F08%2F02%2FAndroid%2FScale%E5%8A%A8%E7%94%BB%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E5%9D%91%2F</url>
+    <content type="text"><![CDATA[Scale动画组合使用的坑API1Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); 参数1: X的初始值参数2: X的最终值参数3: Y的初始值参数4: Y的最终值参数5: X轴，Animation.RELATIVE_TO_SELF表示根据view大小的百分比进行缩放参数6: X轴缩放轴点，1f表示以View的最右端为轴点参数7: Y轴，同参数5参数8: Y轴，同参数6 问题一个补间动画AnimationSet中有两个ScaleAnimation，先放大后缩小1234567891011121314// start animation AnimationSet animationSet = new AnimationSet(false); Animation alpha = new AlphaAnimation(0, 100); alpha.setDuration(80); Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); scale.setDuration(160); scale.setInterpolator(PathInterpolatorCompat.create(0.32f, 0.66f, 0.6f, 1f)); Animation scale2 = new ScaleAnimation(1.03f, 1f, 1.03f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); scale2.setDuration(70); scale2.setStartOffset(160); animationSet.addAnimation(scale); animationSet.addAnimation(scale2); animationSet.addAnimation(alpha); tv.startAnimation(animationSet); 但是最后的动画效果却非常不流畅，通过加长动画效果，发现动画在放大后缩回的过程中，缩一定程度后直接突变到了最初始的大小 原因scale动画是根据当前的值进行缩放的，所以scale2应该改成这个样子123Animation scale2 = new ScaleAnimation(1.03f, 1f, 1.03f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0);scale2.setDuration(70);scale2.setStartOffset(160);]]></content>
+      <categories>
+        <category>Android</category>
+        <category>View</category>
+      </categories>
+      <tags>
+        <tag>Animation</tag>
+        <tag>View</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[ThreadLocal]]></title>
     <url>%2F2019%2F07%2F22%2FJava%2FThreadLocal%2F</url>
     <content type="text"><![CDATA[ThreadLocal作用当使用ThreadLocal维护变量时，ThreadLocal为每个使用该变量的线程提供独立的变量副本，所以每一个线程都可以独立的改变自己的副本，而不会影响其他线程所对应的副本。从线程的角度来看，目标变量就像是本地变量 源码分析set()12345678public void set(T value) &#123; Thread t = Thread.currentThread(); ThreadLocalMap map = getMap(t); if (map != null) map.set(this, value); else createMap(t, value); &#125; createMap()方法：123void createMap(Thread t, T firstValue) &#123; t.threadLocals = new ThreadLocalMap(this, firstValue); &#125; 查看Thread类的代码：123/* ThreadLocal values pertaining to this thread. This map is maintained * by the ThreadLocal class. */ ThreadLocal.ThreadLocalMap threadLocals = null; Thread类中有一个Thread.ThreadLocalMap成员变量。也就是说，ThreadLocal的set方法，实质是在Thread的threadlocals成员中添加value get()方法12345678910111213public T get() &#123; Thread t = Thread.currentThread(); ThreadLocalMap map = getMap(t); if (map != null) &#123; ThreadLocalMap.Entry e = map.getEntry(this); if (e != null) &#123; @SuppressWarnings("unchecked") T result = (T)e.value; return result; &#125; &#125; return setInitialValue(); &#125; 其中的ThreadLocalMap.Entry123456789static class Entry extends WeakReference&lt;ThreadLocal&lt;?&gt;&gt; &#123; /** The value associated with this ThreadLocal. */ Object value; Entry(ThreadLocal&lt;?&gt; k, Object v) &#123; super(k); value = v; &#125; &#125; Entry中的key时ThreadLocal的弱引用， 所以在ThreadLocal的get方法中map.getEntry(this)传入的是自己 总结Thread类中有一个ThreadLocalMap成员对象，这个变量在Thread类中并没有使用，只有在ThreadLocal类中才有用到。ThreadLocalMap里的Entry固定为ThreadLocal的弱引用。也就是说ThreadLocal是将value存储到Thread中，调用get和set方法是，先得到当前的Thread线程对象，获取到thread中的map，在以自己为key获取到value值]]></content>
