@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[RecyclerView缓存机制总结]]></title>
+    <url>%2F2019%2F08%2F15%2FAndroid%2FRecyclerView%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title><![CDATA[事件分发机制]]></title>
+    <url>%2F2019%2F08%2F13%2FAndroid%2F%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6%2F</url>
+    <content type="text"><![CDATA[事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码12345678910public boolean dispatchTouchEvent()&#123; boolean consume = false; if (onInterceptTouchEvent(ev))&#123; consume = onTouchEvent(ev); &#125;else&#123; consume = child.dispatchTouchEvent(ev); &#125; return consume;&#125; View的dispatchTouchEvent方法如果有onTouchListener，优先执行onTouch方法，如果onTouch方法返回true，则不执行onTouchEvent方法]]></content>
+      <tags>
+        <tag>View</tag>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Scale动画组合使用的坑]]></title>
     <url>%2F2019%2F08%2F02%2FAndroid%2FScale%E5%8A%A8%E7%94%BB%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E5%9D%91%2F</url>
     <content type="text"><![CDATA[Scale动画组合使用的坑API1Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); 参数1: X的初始值参数2: X的最终值参数3: Y的初始值参数4: Y的最终值参数5: X轴，Animation.RELATIVE_TO_SELF表示根据view大小的百分比进行缩放参数6: X轴缩放轴点，1f表示以View的最右端为轴点参数7: Y轴，同参数5参数8: Y轴，同参数6 问题一个补间动画AnimationSet中有两个ScaleAnimation，先放大后缩小1234567891011121314// start animation AnimationSet animationSet = new AnimationSet(false); Animation alpha = new AlphaAnimation(0, 100); alpha.setDuration(80); Animation scale = new ScaleAnimation(0.6f, 1.03f, 0.6f, 1.03f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); scale.setDuration(160); scale.setInterpolator(PathInterpolatorCompat.create(0.32f, 0.66f, 0.6f, 1f)); Animation scale2 = new ScaleAnimation(1.03f, 1f, 1.03f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0); scale2.setDuration(70); scale2.setStartOffset(160); animationSet.addAnimation(scale); animationSet.addAnimation(scale2); animationSet.addAnimation(alpha); tv.startAnimation(animationSet); 但是最后的动画效果却非常不流畅，通过加长动画效果，发现动画在放大后缩回的过程中，缩一定程度后直接突变到了最初始的大小 原因scale动画是根据当前的值进行缩放的，所以scale2应该改成这个样子123Animation scale2 = new ScaleAnimation(1.03f, 1f, 1.03f, 1f, Animation.RELATIVE_TO_SELF, 1f, Animation.RELATIVE_TO_SELF, 0);scale2.setDuration(70);scale2.setStartOffset(160);]]></content>
@@ -9,8 +23,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Animation</tag>
         <tag>View</tag>
+        <tag>Animation</tag>
       </tags>
   </entry>
   <entry>
@@ -122,8 +136,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>MVP</tag>
         <tag>内存泄露</tag>
+        <tag>MVP</tag>
       </tags>
   </entry>
   <entry>
@@ -157,8 +171,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>内存泄露</tag>
         <tag>Handler</tag>
+        <tag>内存泄露</tag>
       </tags>
   </entry>
   <entry>

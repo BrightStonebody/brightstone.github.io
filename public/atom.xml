@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-08-02T01:59:12.678Z</updated>
+  <updated>2019-08-14T16:31:30.683Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,11 +17,50 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>RecyclerView缓存机制总结</title>
+    <link href="http://yoursite.com/2019/08/15/Android/RecyclerView%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93/"/>
+    <id>http://yoursite.com/2019/08/15/Android/RecyclerView缓存机制总结/</id>
+    <published>2019-08-14T16:31:17.000Z</published>
+    <updated>2019-08-14T16:31:30.683Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>事件分发机制</title>
+    <link href="http://yoursite.com/2019/08/13/Android/%E4%BA%8B%E4%BB%B6%E5%88%86%E5%8F%91%E6%9C%BA%E5%88%B6/"/>
+    <id>http://yoursite.com/2019/08/13/Android/事件分发机制/</id>
+    <published>2019-08-13T13:12:59.000Z</published>
+    <updated>2019-08-13T15:43:18.034Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="事件分发机制"><a href="#事件分发机制" class="headerlink" title="事件分发机制"></a>事件分发机制</h1><h1 id="dispatchTouchEvent"><a href="#dispatchTouchEvent" class="headerlink" title="dispatchTouchEvent"></a>dispatchTouchEvent</h1><h2 id="ViewGroup的dispatchTouchEvent方法"><a href="#ViewGroup的dispatchTouchEvent方法" class="headerlink" title="ViewGroup的dispatchTouchEvent方法"></a>ViewGroup的dispatchTouchEvent方法</h2><h3 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public boolean dispatchTouchEvent()&#123;</span><br><span class="line">    boolean consume = false;</span><br><span class="line">    if (onInterceptTouchEvent(ev))&#123;</span><br><span class="line">        consume = onTouchEvent(ev);</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        consume = child.dispatchTouchEvent(ev);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return consume;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="View的dispatchTouchEvent方法"><a href="#View的dispatchTouchEvent方法" class="headerlink" title="View的dispatchTouchEvent方法"></a>View的dispatchTouchEvent方法</h2><p>如果有onTouchListener，优先执行onTouch方法，如果onTouch方法返回true，则不执行onTouchEvent方法</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;事件分发机制&quot;&gt;&lt;a href=&quot;#事件分发机制&quot; class=&quot;headerlink&quot; title=&quot;事件分发机制&quot;&gt;&lt;/a&gt;事件分发机制&lt;/h1&gt;&lt;h1 id=&quot;dispatchTouchEvent&quot;&gt;&lt;a href=&quot;#dispatchTouchEvent&quot;
+      
+    
+    </summary>
+    
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
+    
+      <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Scale动画组合使用的坑</title>
     <link href="http://yoursite.com/2019/08/02/Android/Scale%E5%8A%A8%E7%94%BB%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8%E7%9A%84%E5%9D%91/"/>
     <id>http://yoursite.com/2019/08/02/Android/Scale动画组合使用的坑/</id>
     <published>2019-08-02T01:43:37.000Z</published>
-    <updated>2019-08-02T01:59:12.678Z</updated>
+    <updated>2019-08-06T09:17:45.668Z</updated>
     
     <content type="html"><![CDATA[<h1 id="Scale动画组合使用的坑"><a href="#Scale动画组合使用的坑" class="headerlink" title="Scale动画组合使用的坑"></a>Scale动画组合使用的坑</h1><h2 id="API"><a href="#API" class="headerlink" title="API"></a>API</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br></pre></td></tr></table></figure><p>参数1: X的初始值<br>参数2: X的最终值<br>参数3: Y的初始值<br>参数4: Y的最终值<br>参数5: X轴，Animation.RELATIVE_TO_SELF表示根据view大小的百分比进行缩放<br>参数6: X轴缩放轴点，1f表示以View的最右端为轴点<br>参数7: Y轴，同参数5<br>参数8: Y轴，同参数6</p><h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一个补间动画AnimationSet中有两个ScaleAnimation，先放大后缩小<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// start animation</span></span><br><span class="line">        AnimationSet animationSet = <span class="keyword">new</span> AnimationSet(<span class="keyword">false</span>);</span><br><span class="line">        Animation alpha = <span class="keyword">new</span> AlphaAnimation(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line">        alpha.setDuration(<span class="number">80</span>);</span><br><span class="line">        Animation scale = <span class="keyword">new</span> ScaleAnimation(<span class="number">0.6f</span>, <span class="number">1.03f</span>, <span class="number">0.6f</span>, <span class="number">1.03f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale.setDuration(<span class="number">160</span>);</span><br><span class="line">        scale.setInterpolator(PathInterpolatorCompat.create(<span class="number">0.32f</span>, <span class="number">0.66f</span>, <span class="number">0.6f</span>, <span class="number">1f</span>));</span><br><span class="line">        Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">        scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">        scale2.setStartOffset(<span class="number">160</span>);</span><br><span class="line">        animationSet.addAnimation(scale);</span><br><span class="line">        animationSet.addAnimation(scale2);</span><br><span class="line">        animationSet.addAnimation(alpha);</span><br><span class="line">        tv.startAnimation(animationSet);</span><br></pre></td></tr></table></figure></p><p>但是最后的动画效果却非常不流畅，通过加长动画效果，发现动画在放大后缩回的过程中，缩一定程度后直接突变到了最初始的大小</p><h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>scale动画是根据当前的值进行缩放的，所以scale2应该改成这个样子<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Animation scale2 = <span class="keyword">new</span> ScaleAnimation(<span class="number">1.03f</span>, <span class="number">1f</span>, <span class="number">1.03f</span>, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">1f</span>, Animation.RELATIVE_TO_SELF, <span class="number">0</span>);</span><br><span class="line">scale2.setDuration(<span class="number">70</span>);</span><br><span class="line">scale2.setStartOffset(<span class="number">160</span>);</span><br></pre></td></tr></table></figure></p>]]></content>
     
@@ -39,9 +78,9 @@
       <category term="View" scheme="http://yoursite.com/categories/Android/View/"/>
     
     
-      <category term="Animation" scheme="http://yoursite.com/tags/Animation/"/>
-    
       <category term="View" scheme="http://yoursite.com/tags/View/"/>
+    
+      <category term="Animation" scheme="http://yoursite.com/tags/Animation/"/>
     
   </entry>
   
@@ -299,9 +338,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
-    
       <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
+    
+      <category term="MVP" scheme="http://yoursite.com/tags/MVP/"/>
     
   </entry>
   
@@ -378,9 +417,9 @@
       <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
     
     
-      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
-    
       <category term="Handler" scheme="http://yoursite.com/tags/Handler/"/>
+    
+      <category term="内存泄露" scheme="http://yoursite.com/tags/%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
@@ -476,29 +515,6 @@
     </summary>
     
       <category term="C/C++" scheme="http://yoursite.com/categories/C-C/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2019/04/13/hello-world/"/>
-    <id>http://yoursite.com/2019/04/13/hello-world/</id>
-    <published>2019-04-12T18:13:28.000Z</published>
-    <updated>2019-04-12T18:13:28.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
-      
-    
-    </summary>
-    
-      <category term="hello-world" scheme="http://yoursite.com/categories/hello-world/"/>
     
     
   </entry>
