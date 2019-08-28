@@ -98,7 +98,7 @@
 
   <meta property="og:type" content="website">
 <meta property="og:title" content="BrightStone">
-<meta property="og:url" content="http://yoursite.com/categories/Android/View/index.html">
+<meta property="og:url" content="http://yoursite.com/categories/Android/view/index.html">
 <meta property="og:site_name" content="BrightStone">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
@@ -110,7 +110,7 @@
 
   
   
-  <link rel="canonical" href="http://yoursite.com/categories/Android/View/">
+  <link rel="canonical" href="http://yoursite.com/categories/Android/view/">
 
 
 
@@ -120,7 +120,7 @@
   };
 </script>
 
-  <title>分类: View | BrightStone</title>
+  <title>分类: view | BrightStone</title>
   
 
 
@@ -358,7 +358,7 @@
 
     <div id="posts" class="posts-collapse">
       <div class="collection-title">
-        <h1>View<small>分类</small>
+        <h1>view<small>分类</small>
         </h1>
       </div>
 
@@ -370,17 +370,17 @@
 
       <h2 class="post-title">
         
-          <a class="post-title-link" href="/2019/08/02/Android/Scale动画组合使用的坑/" itemprop="url">
+          <a class="post-title-link" href="/2019/04/13/Android/自定义ViewGroup/" itemprop="url">
             
-              <span itemprop="name">Scale动画组合使用的坑</span>
+              <span itemprop="name">自定义ViewGroup</span>
             
           </a>
         
       </h2>
 
       <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-02T09:43:37+08:00" content="2019-08-02">
-          08-02
+        <time class="post-time" itemprop="dateCreated" datetime="2019-04-13T13:12:35+08:00" content="2019-04-13">
+          04-13
         </time>
       </div>
 
@@ -437,7 +437,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -521,7 +521,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -998,6 +1000,63 @@
     }
 
     // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
+w;
     $('.popup-trigger').click(function(e) {
       e.stopPropagation();
       if (isfetched === false) {

@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-08-14T16:31:30.683Z</updated>
+  <updated>2019-08-28T15:28:06.389Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,16 +17,56 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>通知铃声的自定义遇到的问题</title>
+    <link href="http://yoursite.com/2019/08/28/Android/%E9%80%9A%E7%9F%A5%E9%93%83%E5%A3%B0%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <id>http://yoursite.com/2019/08/28/Android/通知铃声的自定义遇到的问题/</id>
+    <published>2019-08-28T15:07:53.000Z</published>
+    <updated>2019-08-28T15:28:06.389Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="通知铃声自定义遇到的问题"><a href="#通知铃声自定义遇到的问题" class="headerlink" title="通知铃声自定义遇到的问题"></a>通知铃声自定义遇到的问题</h1><h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>在自定义通知铃声是，当铃声的uri来自本地文件，或者是项目的资源文件，当通知弹出时，没有声音</p><h2 id="问题根源："><a href="#问题根源：" class="headerlink" title="问题根源："></a>问题根源：</h2><h3 id="1-从系统文件管理器中获取文件，从得到的uri中获取原始路径"><a href="#1-从系统文件管理器中获取文件，从得到的uri中获取原始路径" class="headerlink" title="1.从系统文件管理器中获取文件，从得到的uri中获取原始路径"></a>1.从系统文件管理器中获取文件，从得到的uri中获取原始路径</h3><p><strong>所有尝试从Uri中获取原始路径的方法，都是不推荐和不可靠的</strong></p><p>网上大部分的方法都是解析Uri，使用cursor读取对应的字段，然后获取到文件的路径，但是，经过尝试后发现，大部分机型中，cursor并没有那个字段，当然也就得不到对应的路径。</p><p>正确的做法应当是，使用ContentResolver获取到对应的文件流，拷问文件到App的目录中。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">InputStream fis = getContentResolver().openInputStream(uri);</span><br></pre></td></tr></table></figure><h3 id="2-将拷贝的文件转化为uri"><a href="#2-将拷贝的文件转化为uri" class="headerlink" title="2. 将拷贝的文件转化为uri"></a>2. 将拷贝的文件转化为uri</h3><p><strong>失败的尝试：使用Uri.fromFile():</strong><br>首先，App将自己的铃声文件设置到notificaiton中，系统要弹出一个notification时，会调用我们的项目目录的铃声文件。</p><p>在Android7.0以上的版本中，对这种行为进行了限制，获取文件的Uri一定要使用FileProvider，而不能直接调用fromFile()方法.</p><h3 id="3-grantUriPermission"><a href="#3-grantUriPermission" class="headerlink" title="3. grantUriPermission()"></a>3. grantUriPermission()</h3><p>在某些机型中，使用file自定义notification的声音，仍然不能正常工作。<br><strong>设置logcat的Filter选项为No Filter, 会出现FileProvider Permission denial 的 warning</strong><br>为什么要选择No Filter选项才会看到这个warning。<br>是因为，弹出notification是系统服务，和我们的APP项目不是一个包名<br>在file转uri之后添加一个授权的语句就可以了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getApplicationContext().grantUriPermission(&quot;com.android.systemui&quot;,</span><br><span class="line">                Uri.parse(info.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION);</span><br></pre></td></tr></table></figure></p><p>包名com.android.systemui是系统服务的一个包名，负责notification、StatusBar等的相关操作</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;通知铃声自定义遇到的问题&quot;&gt;&lt;a href=&quot;#通知铃声自定义遇到的问题&quot; class=&quot;headerlink&quot; title=&quot;通知铃声自定义遇到的问题&quot;&gt;&lt;/a&gt;通知铃声自定义遇到的问题&lt;/h1&gt;&lt;h2 id=&quot;问题：&quot;&gt;&lt;a href=&quot;#问题：&quot; class
+      
+    
+    </summary>
+    
+    
+      <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
+    
+      <category term="Notification" scheme="http://yoursite.com/tags/Notification/"/>
+    
+  </entry>
+  
+  <entry>
     <title>RecyclerView缓存机制总结</title>
     <link href="http://yoursite.com/2019/08/15/Android/RecyclerView%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93/"/>
     <id>http://yoursite.com/2019/08/15/Android/RecyclerView缓存机制总结/</id>
     <published>2019-08-14T16:31:17.000Z</published>
-    <updated>2019-08-14T16:31:30.683Z</updated>
+    <updated>2019-08-21T03:29:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="RecyclerView缓存机制总结"><a href="#RecyclerView缓存机制总结" class="headerlink" title="RecyclerView缓存机制总结"></a>RecyclerView缓存机制总结</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><strong>scrapped:</strong><br>A “scrapped” view is a view that is still attached to its parent RecyclerView but that has been marked for removal or reuse</p><h2 id="RecyclerView中涉及到缓存的集合"><a href="#RecyclerView中涉及到缓存的集合" class="headerlink" title="RecyclerView中涉及到缓存的集合"></a>RecyclerView中涉及到缓存的集合</h2><ul><li>mAttachedScrap<ul><li>显示在屏幕中，未与RecyclerView分离但被标记移除的Holder。 实际上是从屏幕上分离出来的ViewHolder，但是又即将添加到屏幕上去的ViewHolder。</li></ul></li><li>mChangedScrap<ul><li>显示在屏幕中，数据已经发生改变的Holder。notifxxx方法时产生</li></ul></li><li>mCachedViews <ul><li>在屏幕外的Holder。缓存，幕刃大小为2。</li></ul></li><li>mRecyclerPool<ul><li>在屏幕外的Holder。当mCachedViews满时，存储至此。按照ViewType进行分类存储。默认大小为5。从中取出的Holder需要调用onBindViewHolder方法</li></ul></li></ul><p>mAttachedScrap、mChangedScrap、mCachedViews中取出的Holder是直接可用的，不需要调用onCreatedViewHolder和onBindViewHolder方法。<br>mRecyclerPool中取出的Holder是无效的，需要调用onBindViewHolder方法<br><strong>很奇怪，按照网上mChangedScrap的解释，其中的Holder明显是需要调用onBindViewHolder方法的。但是网上的解释同时又都说不需要调用。。</strong></p><h2 id="RecyclerView获取Holder的顺序-sdk-28"><a href="#RecyclerView获取Holder的顺序-sdk-28" class="headerlink" title="RecyclerView获取Holder的顺序(sdk 28)"></a>RecyclerView获取Holder的顺序(sdk 28)</h2><ol><li>getChangedScrapViewForPosition</li><li>getScrapOrHiddenOrCachedHolderForPosition</li><li>getScrapOrCachedViewForId</li><li>getChildViewHolder</li><li>mViewCacheExtension.getViewForPositionAndType</li><li>getRecycledViewPool().getRecycledView</li><li>mAdapter.createViewHolder</li></ol><h2 id="四级缓存"><a href="#四级缓存" class="headerlink" title="四级缓存"></a>四级缓存</h2><ol><li>mAttachedScrap  mChangedScrap</li><li>mCacheView</li><li>mViewCacheExtension</li><li>mRecyclerPool</li></ol><h2 id="ListView的缓存机制"><a href="#ListView的缓存机制" class="headerlink" title="ListView的缓存机制"></a>ListView的缓存机制</h2><h3 id="缓存的集合"><a href="#缓存的集合" class="headerlink" title="缓存的集合"></a>缓存的集合</h3><ul><li>mActiveViews <ul><li>屏幕内的view，可直接重用</li></ul></li><li>mScrapViews<ul><li>屏幕外的view，需要调用bind</li></ul></li></ul><h3 id="与RecyclerView的不同"><a href="#与RecyclerView的不同" class="headerlink" title="与RecyclerView的不同"></a>与RecyclerView的不同</h3><ol><li>缓存不同： RecyclerView缓存的是ViewHolder，避免了每次的findViewByid，ListView缓存的是View。</li><li>RecyclerView中mCacheViews(屏幕外)获取缓存时，是通过匹配pos获取目标位置的缓存，这样做的好处是，当数据源数据不变的情况下，无须重新bindView。<br>离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新getView（即必定会重新bindView）</li><li>RecyclerView可以实现局部刷新， ListView不行</li></ol><h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a href="https://blog.jiahuan.me/2018/07/27/RecyclerView%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener">RecyclerView源码分析缓存机制</a></p><p><a href="https://www.jianshu.com/p/efe81969f69d" target="_blank" rel="noopener">RecyclerView的缓存机制</a></p><p><a href="https://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&amp;mid=2653578065&amp;idx=2&amp;sn=25e64a8bb7b5934cf0ce2e49549a80d6&amp;chksm=84b3b156b3c43840061c28869671da915a25cf3be54891f040a3532e1bb17f9d32e244b79e3f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">Android ListView 与 RecyclerView 对比浅析–缓存机制</a></p>]]></content>
     
     <summary type="html">
     
+      
+      
+        &lt;h1 id=&quot;RecyclerView缓存机制总结&quot;&gt;&lt;a href=&quot;#RecyclerView缓存机制总结&quot; class=&quot;headerlink&quot; title=&quot;RecyclerView缓存机制总结&quot;&gt;&lt;/a&gt;RecyclerView缓存机制总结&lt;/h1&gt;&lt;h2 id=&quot;基
+      
+    
     </summary>
     
+      <category term="Android" scheme="http://yoursite.com/categories/Android/"/>
+    
+      <category term="View" scheme="http://yoursite.com/categories/Android/View/"/>
+    
+    
+      <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
     
   </entry>
   
@@ -49,9 +89,9 @@
     </summary>
     
     
-      <category term="View" scheme="http://yoursite.com/tags/View/"/>
-    
       <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
+    
+      <category term="View" scheme="http://yoursite.com/tags/View/"/>
     
   </entry>
   
@@ -236,9 +276,9 @@
       <category term="Linux" scheme="http://yoursite.com/categories/Linux/"/>
     
     
-      <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
-    
       <category term="mysql" scheme="http://yoursite.com/tags/mysql/"/>
+    
+      <category term="Linux" scheme="http://yoursite.com/tags/Linux/"/>
     
   </entry>
   
@@ -487,29 +527,6 @@
       
       
         &lt;h1 id=&quot;多个cpp文件编译共享同一个-h文件的全局变量&quot;&gt;&lt;a href=&quot;#多个cpp文件编译共享同一个-h文件的全局变量&quot; class=&quot;headerlink&quot; title=&quot;多个cpp文件编译共享同一个.h文件的全局变量&quot;&gt;&lt;/a&gt;多个cpp文件编译共享同一个.h文
-      
-    
-    </summary>
-    
-      <category term="C/C++" scheme="http://yoursite.com/categories/C-C/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>C语言结构体的内存对齐</title>
-    <link href="http://yoursite.com/2019/04/13/C/C%E8%AF%AD%E8%A8%80%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90/"/>
-    <id>http://yoursite.com/2019/04/13/C/C语言结构体的内存对齐/</id>
-    <published>2019-04-13T05:11:14.000Z</published>
-    <updated>2019-05-12T13:11:22.000Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="C语言结构体的内存对齐"><a href="#C语言结构体的内存对齐" class="headerlink" title="C语言结构体的内存对齐"></a>C语言结构体的内存对齐</h1><h2 id="内存对齐原则"><a href="#内存对齐原则" class="headerlink" title="内存对齐原则"></a>内存对齐原则</h2><ul><li><p>数据成员对齐规则：结构（struct或联合union）的数据成员，第一个数据成员放在offset为0的地方，以后每个数据成员存储的起始位置: min(#pragma pack()指定的数,这个数据%成员的自身长度)的倍数</p></li><li><p>结构体作为成员：如果一个结构里有某些结构体成员，则结构体成员要从min(#pragram pack() , 内部长度最长的数据成员)的整数倍地址开始存储。（struct a里存有struct b，b里有char，int，double等元素，那b应该从min(#pragram pack(), 8)的整数倍开始存储。）</p></li><li><p>结构体的总大小，也就是sizeof的结果，必须是 min(#pragram pack() , 长度最长的数据成员) 的整数倍</p></li></ul><h2 id="pragram-pack-4"><a href="#pragram-pack-4" class="headerlink" title="pragram pack(4)"></a>pragram pack(4)</h2><p>设置内存对齐的字节数， 默认为系统字长，64位系统为8字节，32位系统为4字节</p><h2 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># pragram pack(8)</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">S3</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">double</span> d;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">S4</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> c1;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">S3</span> <span class="title">s3</span>;</span></span><br><span class="line">    <span class="keyword">double</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>, <span class="keyword">sizeof</span>(struct S4));</span><br></pre></td></tr></table></figure><p>最后的输出为 32</p><h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a href="https://www.cnblogs.com/zwh0214/p/8833314.html" target="_blank" rel="noopener">[C/C++] 结构体内存对齐用法 - 我自逍遥笑 - 博客园</a></p><h2 id="C语言联合体union的sizeof"><a href="#C语言联合体union的sizeof" class="headerlink" title="C语言联合体union的sizeof"></a>C语言联合体union的sizeof</h2><p><strong>分配给union的实际大小不仅要满足是对齐大小的整数倍，同时要满足实际大小不能小于最大成员的大小。</strong></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h1 id=&quot;C语言结构体的内存对齐&quot;&gt;&lt;a href=&quot;#C语言结构体的内存对齐&quot; class=&quot;headerlink&quot; title=&quot;C语言结构体的内存对齐&quot;&gt;&lt;/a&gt;C语言结构体的内存对齐&lt;/h1&gt;&lt;h2 id=&quot;内存对齐原则&quot;&gt;&lt;a href=&quot;#内存对齐原则&quot; cla
       
     
     </summary>
