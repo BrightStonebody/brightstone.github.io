@@ -2,15 +2,11 @@
 title: LayoutInflater解析
 date: 2019-08-13 20:31:21
 tags:
-
-* Android
-* View
-
+- Android
+- View
 Categories:
-
-* Android
-* View
-
+- Android
+- View
 ---
 
 # LayoutInflater解析

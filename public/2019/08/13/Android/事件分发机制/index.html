@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码12345678910public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = onTou">
+  <meta name="description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码1234567891011public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = sup">
 <meta name="keywords" content="Android,View">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事件分发机制">
 <meta property="og:url" content="http://yoursite.com/2019/08/13/Android/事件分发机制/index.html">
 <meta property="og:site_name" content="BrightStone">
-<meta property="og:description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码12345678910public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = onTou">
+<meta property="og:description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码1234567891011public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = sup">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-13T15:43:18.034Z">
+<meta property="og:updated_time" content="2019-09-15T07:32:03.384Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="事件分发机制">
-<meta name="twitter:description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码12345678910public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = onTou">
+<meta name="twitter:description" content="事件分发机制dispatchTouchEventViewGroup的dispatchTouchEvent方法伪代码1234567891011public boolean dispatchTouchEvent()&amp;#123;    boolean consume = false;    if (onInterceptTouchEvent(ev))&amp;#123;        consume = sup">
 
 
 
@@ -396,12 +396,24 @@
                 
               
 
-              <time title="创建时间：2019-08-13 21:12:59 / 修改时间：23:43:18" itemprop="dateCreated datePublished" datetime="2019-08-13T21:12:59+08:00">2019-08-13</time>
+              <time title="创建时间：2019-08-13 21:12:59" itemprop="dateCreated datePublished" datetime="2019-08-13T21:12:59+08:00">2019-08-13</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-15 15:32:03" itemprop="dateModified" datetime="2019-09-15T15:32:03+08:00">2019-09-15</time>
               
             
           </span>
@@ -435,7 +447,10 @@
       
 
       
-        <h1 id="事件分发机制"><a href="#事件分发机制" class="headerlink" title="事件分发机制"></a>事件分发机制</h1><h1 id="dispatchTouchEvent"><a href="#dispatchTouchEvent" class="headerlink" title="dispatchTouchEvent"></a>dispatchTouchEvent</h1><h2 id="ViewGroup的dispatchTouchEvent方法"><a href="#ViewGroup的dispatchTouchEvent方法" class="headerlink" title="ViewGroup的dispatchTouchEvent方法"></a>ViewGroup的dispatchTouchEvent方法</h2><h3 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public boolean dispatchTouchEvent()&#123;</span><br><span class="line">    boolean consume = false;</span><br><span class="line">    if (onInterceptTouchEvent(ev))&#123;</span><br><span class="line">        consume = onTouchEvent(ev);</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        consume = child.dispatchTouchEvent(ev);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return consume;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h1 id="事件分发机制"><a href="#事件分发机制" class="headerlink" title="事件分发机制"></a>事件分发机制</h1><h1 id="dispatchTouchEvent"><a href="#dispatchTouchEvent" class="headerlink" title="dispatchTouchEvent"></a>dispatchTouchEvent</h1><h2 id="ViewGroup的dispatchTouchEvent方法"><a href="#ViewGroup的dispatchTouchEvent方法" class="headerlink" title="ViewGroup的dispatchTouchEvent方法"></a>ViewGroup的dispatchTouchEvent方法</h2><h3 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public boolean dispatchTouchEvent()&#123;</span><br><span class="line">    boolean consume = false;</span><br><span class="line">    if (onInterceptTouchEvent(ev))&#123;</span><br><span class="line">        consume = super.dispatchTouchEvent();</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        consume = child.dispatchTouchEvent(ev);</span><br><span class="line">        if (!consume)</span><br><span class="line">            consume = super.dispatchTouchEvent(ev)</span><br><span class="line">    &#125;</span><br><span class="line">    return consume;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解释：<br>在dispatchTouchEvent方法中，onInterceptTouchEvent方法会判断当前ViewGroup是否会拦截，若拦截，则交给自己处理，若不拦截，则交给子view。若子view不能处理，则还是由自己来处理</p>
+<h3 id="各种事件action"><a href="#各种事件action" class="headerlink" title="各种事件action"></a>各种事件action</h3><h4 id="ActionDown"><a href="#ActionDown" class="headerlink" title="ActionDown"></a>ActionDown</h4><p>ActionDown事件是一个事件序列的开始。当ActionDown事件被ViewGroup拦截，则这个事件剩下的事件将不会通过onInterceptTouchEvent方法，而是直接交给ViewGroup处理</p>
+<h4 id="ActionMove、ActionUp等其他事件"><a href="#ActionMove、ActionUp等其他事件" class="headerlink" title="ActionMove、ActionUp等其他事件"></a>ActionMove、ActionUp等其他事件</h4><p>若ActionDown没有被ViewGroup拦截，则其他的事件每次都会经过ViewGroup的onInterceptTouchEvent方法判断是否拦截</p>
 <h2 id="View的dispatchTouchEvent方法"><a href="#View的dispatchTouchEvent方法" class="headerlink" title="View的dispatchTouchEvent方法"></a>View的dispatchTouchEvent方法</h2><p>如果有onTouchListener，优先执行onTouch方法，如果onTouch方法返回true，则不执行onTouchEvent方法</p>
 
       
@@ -475,8 +490,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/02/Android/Scale动画组合使用的坑/" rel="next" title="Scale动画组合使用的坑">
-                <i class="fa fa-chevron-left"></i> Scale动画组合使用的坑
+              <a href="/2019/08/13/Android/LayoutInflater解析/" rel="next" title="LayoutInflater解析">
+                <i class="fa fa-chevron-left"></i> LayoutInflater解析
               </a>
             
           </div>
@@ -556,7 +571,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -572,6 +587,8 @@
                     
                   
                     
+                    
+                      
                     
                       
                     
@@ -609,6 +626,8 @@
                     
                   
                     
+                    
+                      
                     
                       
                     
@@ -680,7 +699,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#事件分发机制"><span class="nav-number">1.</span> <span class="nav-text">事件分发机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dispatchTouchEvent"><span class="nav-number">2.</span> <span class="nav-text">dispatchTouchEvent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewGroup的dispatchTouchEvent方法"><span class="nav-number">2.1.</span> <span class="nav-text">ViewGroup的dispatchTouchEvent方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#伪代码"><span class="nav-number">2.1.1.</span> <span class="nav-text">伪代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#View的dispatchTouchEvent方法"><span class="nav-number">2.2.</span> <span class="nav-text">View的dispatchTouchEvent方法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#事件分发机制"><span class="nav-number">1.</span> <span class="nav-text">事件分发机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dispatchTouchEvent"><span class="nav-number">2.</span> <span class="nav-text">dispatchTouchEvent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewGroup的dispatchTouchEvent方法"><span class="nav-number">2.1.</span> <span class="nav-text">ViewGroup的dispatchTouchEvent方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#伪代码"><span class="nav-number">2.1.1.</span> <span class="nav-text">伪代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各种事件action"><span class="nav-number">2.1.2.</span> <span class="nav-text">各种事件action</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ActionDown"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">ActionDown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActionMove、ActionUp等其他事件"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">ActionMove、ActionUp等其他事件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#View的dispatchTouchEvent方法"><span class="nav-number">2.2.</span> <span class="nav-text">View的dispatchTouchEvent方法</span></a></li></ol></li></ol></div>
             
 
           </div>

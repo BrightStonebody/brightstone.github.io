@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="BrightStone">
 <meta property="og:description" content="通知铃声自定义遇到的问题问题：在自定义通知铃声是，当铃声的uri来自本地文件，或者是项目的资源文件，当通知弹出时，没有声音 问题根源：1.从系统文件管理器中获取文件，从得到的uri中获取原始路径所有尝试从Uri中获取原始路径的方法，都是不推荐和不可靠的 网上大部分的方法都是解析Uri，使用cursor读取对应的字段，然后获取到文件的路径，但是，经过尝试后发现，大部分机型中，cursor并没有那个字">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-08-28T15:28:06.389Z">
+<meta property="og:updated_time" content="2019-08-28T15:30:47.841Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通知铃声的自定义遇到的问题">
 <meta name="twitter:description" content="通知铃声自定义遇到的问题问题：在自定义通知铃声是，当铃声的uri来自本地文件，或者是项目的资源文件，当通知弹出时，没有声音 问题根源：1.从系统文件管理器中获取文件，从得到的uri中获取原始路径所有尝试从Uri中获取原始路径的方法，都是不推荐和不可靠的 网上大部分的方法都是解析Uri，使用cursor读取对应的字段，然后获取到文件的路径，但是，经过尝试后发现，大部分机型中，cursor并没有那个字">
@@ -396,7 +396,7 @@
                 
               
 
-              <time title="创建时间：2019-08-28 23:07:53 / 修改时间：23:28:06" itemprop="dateCreated datePublished" datetime="2019-08-28T23:07:53+08:00">2019-08-28</time>
+              <time title="创建时间：2019-08-28 23:07:53 / 修改时间：23:30:47" itemprop="dateCreated datePublished" datetime="2019-08-28T23:07:53+08:00">2019-08-28</time>
             
 
             
@@ -444,6 +444,7 @@
 <p>在Android7.0以上的版本中，对这种行为进行了限制，获取文件的Uri一定要使用FileProvider，而不能直接调用fromFile()方法.</p>
 <h3 id="3-grantUriPermission"><a href="#3-grantUriPermission" class="headerlink" title="3. grantUriPermission()"></a>3. grantUriPermission()</h3><p>在某些机型中，使用file自定义notification的声音，仍然不能正常工作。<br><strong>设置logcat的Filter选项为No Filter, 会出现FileProvider Permission denial 的 warning</strong><br>为什么要选择No Filter选项才会看到这个warning。<br>是因为，弹出notification是系统服务，和我们的APP项目不是一个包名<br>在file转uri之后添加一个授权的语句就可以了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">getApplicationContext().grantUriPermission(&quot;com.android.systemui&quot;,</span><br><span class="line">                Uri.parse(info.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION);</span><br></pre></td></tr></table></figure></p>
 <p>包名com.android.systemui是系统服务的一个包名，负责notification、StatusBar等的相关操作</p>
+<p>到这里问题就解决了</p>
 
       
     </div>
@@ -491,6 +492,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/15/Android/RecyclerView全局刷新view避免卡顿/" rel="prev" title="RecyclerView全局刷新view避免卡顿">
+                RecyclerView全局刷新view避免卡顿 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -559,7 +564,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-count">25</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -575,6 +580,8 @@
                     
                   
                     
+                    
+                      
                     
                       
                     
@@ -612,6 +619,8 @@
                     
                   
                     
+                    
+                      
                     
                       
                     

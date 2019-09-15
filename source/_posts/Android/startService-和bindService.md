@@ -2,10 +2,10 @@
 title: startService()和bindService()
 date: 2019-07-04 20:37:58
 tags: 
-- service
+- Service
 categories:
 - Android
-- service
+- Service
 ---
 
 # startService()和bindService()的区别
