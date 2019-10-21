@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Hello World]]></title>
+    <url>%2F2019%2F10%2F21%2Fhello-world%2F</url>
+    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
+      <categories>
+        <category>hello-world</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[RemoteView刷新View]]></title>
     <url>%2F2019%2F09%2F15%2FAndroid%2FRemoteView%E5%88%B7%E6%96%B0View%2F</url>
     <content type="text"><![CDATA[RemoteView刷新View通知栏在Notification通知栏的相关开发中，RemoteView刷新view只要重新发送一遍Notification，保证message_id是相同的就可以了但是由于在实际的需求中出现了异步刷新的场景。即，当要刷新时，先直接刷新textview，调起线程刷新获取image资源，在回调里调用RemoteView的setxxx方法，刷新ImageView。 在这种情况下，出现了刷新不及时的情况，图片的刷新有时成功有时不成功。 在这种情况下，更改了刷新逻辑，当数据更新时直接刷新textview，并发送notification。在回调里调用RemoteView的相关方法，刷新image，并在回调里再次发送notification，以确保通知的view是最新的。其中，虽然是发送了两次notification，但是并不用每次都new一个新的RemoteView出来， 即RemoteView可以重复利用，setContent的时候设置回去就好了 关于Intent由于通知栏的按钮的响应操作都很复杂，所以采取的方法时每次都发送一个广播，添加指定的action和extra，在广播接收器中进行指定的操作。 在操作的过程出出现了一个问题。通知栏有多个按钮，但是一开始，不同按钮的intent的action和extra的key都是一样的，extra的value不同，然后在广播接收器内判断extra来区分不同的按钮。这样做并没达到想要的效果。所有的按钮接收到的intent中的extra值 都是得到的代码中添加的最后一个value值。 也就是说，Intent中，设置了相同的action值，相同的extra的key，之后设置的value值是会覆盖之前的value的。即使是不同的Intent对象]]></content>
@@ -139,9 +147,9 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[mysql配置远程登录]]></title>
-    <url>%2F2019%2F05%2F04%2FLinux%2Fmysql%E9%85%8D%E7%BD%AE%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95%2F</url>
-    <content type="text"><![CDATA[mysql配置远程登录1、给用户远程登录权限：123grant all privileges on *.* to root@'%' identified by "password";FLUSH PRIVILEGES root可以替换为其他用户名， %表示任意ip， 也可以换成指定的ip， password替换成密码 使用以下命令可以查看用户的登录权限1select host,user,password from user; 2、 lnmp环境配置iptableslnmp一键安装环境默认是禁用iptables远程登录的， 查看iptables规则：1iptables -L -n --line-numbers 输入样例如下：可以看到3306端口的target为drop 删除对应的drop规则 1iptables -D INPUT 5 iptables的使用参考：https://www.vpser.net/security/linux-iptables.html]]></content>
+    <title><![CDATA[mysql配置相关]]></title>
+    <url>%2F2019%2F05%2F04%2FLinux%2Fmysql%E9%85%8D%E7%BD%AE%E7%9B%B8%E5%85%B3%2F</url>
+    <content type="text"><![CDATA[1. 尽量使用MariaDB而不是mysql之前有配置过mycat，刚开始使用的mysql，使用yum安装的，默认版本为8.0但是安装之后mycat始终无法登陆，输入密码后总是显示密码错误。后来google了一下，发现是因为mysql8.0的加密方式发生了编码，导致mycat无法正确识别密码于是尝试切换到5.7版本，但是使用yum安装无论如何都无法切换到我想要的版本。重装为MariaDB后没有这个问题了 而且，mysql的命令行终端很明显有bug，没有MariaDB好用 2. MariaDB更新密码mariadb的安装可以查看官网，上面有yum安装的教程。安装之后默认是没有密码的。需要更新密码。另外，发现mariadb在本机是可以不需要密码直接登陆的，不知道原因。但是远程登陆是一定要密码的 中间出现过很奇怪的现象：一同不知道啥的操作之后，输入root密码总是显示密码错误。跳过密码直接回车可以登陆，但是use mysql;命令之后出现access deny ‘‘@’localhost’之类的报错。没有找到原因和解决办法，最后是直接重置了vps 1. mysql_secure_installation 命令安装之后调用mysql_secure_installation 命令，进入到mariadb的初始化，可以设置密码 2. 登陆mysql更改密码12345678# 2.1 更新 mysql 库中 user 表的字段：use mysql; UPDATE user SET password=password('newpassword') WHERE user='root'; flush privileges; exit; # 2.2 或者，使用 set 指令设置root密码：在mariadb 10.4之后的版本只能使用该方法SET password for 'root'@'localhost'=password('newpassword'); 3. mysql配置远程登录1. 给用户远程登录权限：12345use mysqlupdate user set host='%' where user ='root';FLUSH PRIVILEGES;grant all privileges on *.* to root@'%' identified by "password";FLUSH PRIVILEGES; root可以替换为其他用户名， %表示任意ip， 也可以换成指定的ip， password替换成密码 使用以下命令可以查看用户的登录权限 1select host,user,password,plugin from user; 注意root密码的加密方式最好为mysql_native_password，这样子使用中间件登陆才不会出问题。可以使用如下命令更改加密方式： 1update user set plugin='mysql_native_password' where user='root'; 2. lnmp环境配置iptableslnmp一键安装环境默认是禁用iptables远程登录的， 查看iptables规则：1iptables -L -n --line-numbers 输入样例如下：可以看到3306端口的target为drop 删除对应的drop规则 1iptables -D INPUT 5 iptables的使用参考：https://www.vpser.net/security/linux-iptables.html 3.非集成centos环境开放3306端口centos-7以上firewalld 防火墙（centos-7）运行命令,并重启： 12firewall-cmd --zone=public --add-port=3306/tcp --permanentfirewall-cmd --reload centos-7以前iptables 防火墙（centos6.5及其以前）运行命令 1vim /etc/sysconfig/iptables 在文件内添加下面命令行，然后重启 1-A INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT 1service iptables restart]]></content>
       <categories>
         <category>Linux</category>
       </categories>
@@ -262,14 +270,6 @@
     <content type="text"><![CDATA[C语言结构体的内存对齐内存对齐原则 数据成员对齐规则：结构（struct或联合union）的数据成员，第一个数据成员放在offset为0的地方，以后每个数据成员存储的起始位置: min(#pragma pack()指定的数,这个数据%成员的自身长度)的倍数 结构体作为成员：如果一个结构里有某些结构体成员，则结构体成员要从min(#pragram pack() , 内部长度最长的数据成员)的整数倍地址开始存储。（struct a里存有struct b，b里有char，int，double等元素，那b应该从min(#pragram pack(), 8)的整数倍开始存储。） 结构体的总大小，也就是sizeof的结果，必须是 min(#pragram pack() , 长度最长的数据成员) 的整数倍 pragram pack(4)设置内存对齐的字节数， 默认为系统字长，64位系统为8字节，32位系统为4字节 例子：123456789101112131415# pragram pack(8)struct S3&#123; double d; char c; int i;&#125;;struct S4&#123; char c1; struct S3 s3; double d;&#125;;printf("%d\n", sizeof(struct S4)); 最后的输出为 32 参考：[C/C++] 结构体内存对齐用法 - 我自逍遥笑 - 博客园 C语言联合体union的sizeof分配给union的实际大小不仅要满足是对齐大小的整数倍，同时要满足实际大小不能小于最大成员的大小。]]></content>
       <categories>
         <category>C/C++</category>
-      </categories>
-  </entry>
-  <entry>
-    <title><![CDATA[Hello World]]></title>
-    <url>%2F2019%2F04%2F13%2Fhello-world%2F</url>
-    <content type="text"><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new "My New Post" More info: Writing Run server1$ hexo server More info: Server Generate static files1$ hexo generate More info: Generating Deploy to remote sites1$ hexo deploy More info: Deployment]]></content>
-      <categories>
-        <category>hello-world</category>
       </categories>
   </entry>
 </search>
