@@ -5,7 +5,7 @@ tags:
 - view
 categories:
 - Android
-- view
+- View
 ---
 
 # 自定义ViewGroup
