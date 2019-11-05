@@ -57,7 +57,7 @@ mRecyclerPool中取出的Holder是无效的，需要调用onBindViewHolder方法
 ### 与RecyclerView的不同
 1. 缓存不同： RecyclerView缓存的是ViewHolder，避免了每次的findViewByid，ListView缓存的是View。
 2. RecyclerView中mCacheViews(屏幕外)获取缓存时，是通过匹配pos获取目标位置的缓存，这样做的好处是，当数据源数据不变的情况下，无须重新bindView。 
-离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新getView（即必定会重新bindView）
+而同样是离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新getView（即必定会重新bindView）
 3. RecyclerView可以实现局部刷新， ListView不行
 
 
