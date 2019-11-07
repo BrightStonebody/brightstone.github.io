@@ -94,7 +94,7 @@
   <entry>
     <title><![CDATA[Text相关计算]]></title>
     <url>%2F2019%2F07%2F19%2FAndroid%2FText%E7%9B%B8%E5%85%B3%E8%AE%A1%E7%AE%97%2F</url>
-    <content type="text"><![CDATA[Text相关计算Text的相关属性 Baseline上方的值为正，下方的值为负 TextSize和TextView大小的转换相关参数包括： 所使用字体(fallback的话不影响)的UPM(Units Per EM) ascent/descent属性 top/bottom参数 禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize 开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize 参考Paint 绘制文字属性TextView文字实际高度分析]]></content>
+    <content type="text"><![CDATA[Text相关计算Text的相关属性Baseline上方的值为正，下方的值为负 TextSize和TextView大小的转换相关参数包括： 所使用字体(fallback的话不影响)的UPM(Units Per EM) ascent/descent属性 top/bottom参数 禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize 开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize 参考Paint 绘制文字属性TextView文字实际高度分析]]></content>
       <categories>
         <category>Android</category>
       </categories>

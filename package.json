@@ -24,6 +24,8 @@
     "hexo-renderer-marked": "^0.2.11",
     "hexo-renderer-stylus": "^0.2.3",
     "hexo-server": "^0.3.3",
-    "hexo-wordcount": "^6.0.1"
+    "hexo-wordcount": "^6.0.1",
+    "install": "^0.13.0",
+    "npm": "^6.13.0"
   }
 }
