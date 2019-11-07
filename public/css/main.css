@@ -932,16 +932,16 @@ pre .javascript .function {
 }
 .main-inner {
   margin: 0 auto;
-  width: 700px;
+  width: 90%;
 }
 @media (min-width: 1200px) {
   .main-inner {
-    width: 800px;
+    width: 90%;
   }
 }
 @media (min-width: 1600px) {
   .main-inner {
-    width: 900px;
+    width: 95%;
   }
 }
 .header {
@@ -950,16 +950,16 @@ pre .javascript .function {
 .header-inner {
   margin: 0 auto;
   position: relative;
-  width: 700px;
+  width: 90%;
 }
 @media (min-width: 1200px) {
   .header-inner {
-    width: 800px;
+    width: 90%;
   }
 }
 @media (min-width: 1600px) {
   .header-inner {
-    width: 900px;
+    width: 95%;
   }
 }
 .headband {
@@ -1178,7 +1178,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ff2575;
+  background: #ff9ecb;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1415,16 +1415,16 @@ pre .javascript .function {
   box-sizing: border-box;
   margin: 0 auto;
   text-align: center;
-  width: 700px;
+  width: 90%;
 }
 @media (min-width: 1200px) {
   .footer-inner {
-    width: 800px;
+    width: 90%;
   }
 }
 @media (min-width: 1600px) {
   .footer-inner {
-    width: 900px;
+    width: 95%;
   }
 }
 .with-love {
