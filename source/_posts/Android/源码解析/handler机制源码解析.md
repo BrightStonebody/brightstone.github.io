@@ -253,7 +253,7 @@ void quit(boolean safe) {
 }
 ```
 
-### nativeWake(mPtr)
+### enqueueMessage
 
 ```java
 boolean enqueueMessage(Message msg, long when) {
@@ -271,6 +271,7 @@ boolean enqueueMessage(Message msg, long when) {
         boolean needWake;
         if (p == null || when == 0 || when < p.when) {
             // New head, wake up the event queue if blocked.
+            // 添加到队列头部, 有可能是需要wake的
             msg.next = p;
             mMessages = msg;
             needWake = mBlocked;
@@ -278,6 +279,7 @@ boolean enqueueMessage(Message msg, long when) {
             // Inserted within the middle of the queue.  Usually we don't have to wake
             // up the event queue unless there is a barrier at the head of the queue
             // and the message is the earliest asynchronous message in the queue.
+            // 插入到队列的中间位置. 通常这种情况下, 我们不需要wake线程. 除非有一种请求, 就是队列的头msg是一个同步barrier, 并且新插入的msg是一个异步消息
             needWake = mBlocked && p.target == null && msg.isAsynchronous();
             Message prev;
             for (;;) {
@@ -309,5 +311,8 @@ boolean enqueueMessage(Message msg, long when) {
 
 #### **2. needWake**
 判断是否需要唤醒线程. 
-needWake=true的具体时机, 可以翻上面nativePollOnce中出现永久阻塞的时机
+在以下情况下, needWake会为true:
+* 消息队列为空, 并且当前线程是blocked的. 这种情况下nativePollOnce方法执行过, 目标线程被挂起, 并且nextPollTimeoutMillis = -1
+* 消息队列不为空, 并且当前线程是blocked的, 新插入msg.when < 头结点p.when. 这种情况表示, 消息队列中头结点的时间还没到, 目标线程已经被挂起了, 但是新插入的msg执行时间小于头结点的时间, 此时当然应该唤醒线程先执行新msg
+* 消息队列不为空, 但是消息队列头结点是一个同步barrier, 并且新插入的msg为异步消息. 这种情况下nativePollOnce方法同样执行过, 目标线程被挂起, 并且nextPollTimeoutMillis = -1
 
