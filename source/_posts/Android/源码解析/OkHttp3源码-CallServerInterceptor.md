@@ -8,6 +8,8 @@ categories:
 - Android
 ---
 
+CallServerInterceptor主要负责具体的访问服务端
+
 ```java
 /** This is the last interceptor in the chain. It makes a network call to the server. */
 

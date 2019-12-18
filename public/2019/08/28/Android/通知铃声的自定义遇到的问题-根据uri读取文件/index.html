@@ -38,7 +38,7 @@
       hits: {"per_page":20},
       labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     },
-    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
     path: 'search.xml',
     motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     translation: {
@@ -51,14 +51,14 @@
 </script>
 
   <meta name="description" content="通知铃声自定义遇到的问题: 根据uri读取文件">
-<meta name="keywords" content="Android,Notification">
+<meta name="keywords" content="Android,Notification,Uri">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通知铃声的自定义遇到的问题-根据uri读取文件">
 <meta property="og:url" content="http://yoursite.com/2019/08/28/Android/通知铃声的自定义遇到的问题-根据uri读取文件/index.html">
 <meta property="og:site_name" content="BrightStone">
 <meta property="og:description" content="通知铃声自定义遇到的问题: 根据uri读取文件">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-14T07:12:50.235Z">
+<meta property="og:updated_time" content="2019-11-20T11:48:44.975Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="通知铃声的自定义遇到的问题-根据uri读取文件">
 <meta name="twitter:description" content="通知铃声自定义遇到的问题: 根据uri读取文件">
@@ -160,9 +160,32 @@
     <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 
 </nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none" placeholder="搜索..." spellcheck="false" type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
 </div>
     </header>
 
@@ -216,7 +239,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-11-14 15:12:50" itemprop="dateModified" datetime="2019-11-14T15:12:50+08:00">2019-11-14</time>
+                <time title="修改时间：2019-11-20 19:48:44" itemprop="dateModified" datetime="2019-11-20T19:48:44+08:00">2019-11-20</time>
               </span>
 
           
@@ -251,6 +274,7 @@
           <div class="post-tags">
               <a href="/tags/Android/" rel="tag"># Android</a>
               <a href="/tags/Notification/" rel="tag"># Notification</a>
+              <a href="/tags/Uri/" rel="tag"># Uri</a>
           </div>
 
         
@@ -321,7 +345,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -334,7 +358,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -401,6 +425,8 @@
 
 
 
+
+  <script src="/js/local-search.js"></script>
 
 
 

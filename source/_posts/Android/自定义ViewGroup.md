@@ -2,7 +2,7 @@
 title: 自定义ViewGroup
 date: 2019-04-13 13:12:35
 tags:
-- view
+- View
 categories:
 - Android
 - View

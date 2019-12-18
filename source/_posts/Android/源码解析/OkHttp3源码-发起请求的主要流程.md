@@ -134,26 +134,25 @@ void executeOn(ExecutorService executorService) {
       }
     }
 
-    @Override protected void execute() {
-      boolean signalledCallback = false;
-      timeout.enter();
-      try {
-        Response response = getResponseWithInterceptorChain();
-        signalledCallback = true;
-        responseCallback.onResponse(RealCall.this, response);
-      } catch (IOException e) {
-        e = timeoutExit(e);
-        if (signalledCallback) {
-          // Do not signal the callback twice!
-          Platform.get().log(INFO, "Callback failure for " + toLoggableString(), e);
-        } else {
-          eventListener.callFailed(RealCall.this, e);
-          responseCallback.onFailure(RealCall.this, e);
-        }
-      } finally {
-        client.dispatcher().finished(this);
-      }
+@Override protected void execute() {
+  boolean signalledCallback = false;
+  timeout.enter();
+  try {
+    Response response = getResponseWithInterceptorChain();
+    signalledCallback = true;
+    responseCallback.onResponse(RealCall.this, response);
+  } catch (IOException e) {
+    e = timeoutExit(e);
+    if (signalledCallback) {
+      // Do not signal the callback twice!
+      Platform.get().log(INFO, "Callback failure for " + toLoggableString(), e);
+    } else {
+      eventListener.callFailed(RealCall.this, e);
+      responseCallback.onFailure(RealCall.this, e);
     }
+  } finally {
+    client.dispatcher().finished(this);
+  }
 }
 ```
 再execute方法中同样看到了getResponseWithInterceptorChain, 说明, 异步call交给dispatcher调度之后, 兜兜转转, 最终还是回到了call内部的方法来最终执行.
