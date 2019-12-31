@@ -1,9 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[自动滚播TextView]]></title>
+    <url>%2F2019%2F12%2F31%2FAndroid%2F%E8%87%AA%E5%8A%A8%E6%BB%9A%E6%92%ADTextView%2F</url>
+    <content type="text"><![CDATA[要实现一个自动滚播的自定义View123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156public class AutoSwitchView extends AppCompatTextView &#123; private final int DEFAULT_IDLE_TIME = 3000; private final int DEFAULT_SWITCH_TIME = 1000; private int mIdleTime = DEFAULT_IDLE_TIME; private int mSwitchTime = DEFAULT_SWITCH_TIME; private Paint mPaint; private String mCurStr; private String mNextStr; private List&lt;String&gt; mContentList; private int mCurIndex = 0; private float mCurValue; private boolean mIsRunning = false; private ValueAnimator mAnimator; private Paint.FontMetrics mFontMetrics; private Runnable mRunnable; private int mWidth; private int mPaddingLeft; private int mPaddingRight; private int mPaddingTop; private int mPaddingBottom; private int mHeight; private float mTextBaseY; public AutoSwitchView(Context context) &#123; super(context); init(context); &#125; public AutoSwitchView(Context context, @Nullable AttributeSet attrs) &#123; super(context, attrs); init(context); &#125; public AutoSwitchView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) &#123; super(context, attrs, defStyleAttr); init(context); &#125; private void init(Context context) &#123; mPaint = new Paint(); mPaint.setTextAlign(Paint.Align.CENTER); mAnimator = ValueAnimator.ofFloat(0, 1); mAnimator.setStartDelay(mIdleTime); mAnimator.setDuration(mSwitchTime); mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() &#123; @Override public void onAnimationUpdate(ValueAnimator animation) &#123; mCurValue = (float) animation.getAnimatedValue(); // 必须要加这个判断, 不然会出现问题 if (mCurValue &lt; 1.0) &#123; invalidate(); &#125; &#125; &#125;); mAnimator.addListener(new AnimatorListenerAdapter() &#123; @Override public void onAnimationEnd(Animator animation, boolean isReverse) &#123; if (!mIsRunning) &#123; return; &#125; mCurIndex = (mCurIndex + 1) % mContentList.size(); mCurStr = mContentList.get(mCurIndex); mNextStr = mContentList.get((mCurIndex + 1) % mContentList.size()); if (mRunnable == null) &#123; mRunnable = new Runnable() &#123; @Override public void run() &#123; mAnimator.start(); &#125; &#125;; &#125; postDelayed(mRunnable, mIdleTime); &#125; @Override public void onAnimationCancel(Animator animation) &#123; mIsRunning = false; &#125; &#125;); &#125; public void start() &#123; if (mContentList == null || mContentList.size() == 0) return; if (mIsRunning) &#123; return; &#125; if (mContentList.size() &gt; 1) &#123; mCurStr = mContentList.get(0); mNextStr = mContentList.get(1); &#125; else &#123; mCurStr = mContentList.get(0); mNextStr = mContentList.get(0); &#125; mCurIndex = 0; mIsRunning = true; mAnimator.start(); mAnimator.setStartDelay(mIdleTime); &#125; public void stop() &#123; if (mRunnable != null) &#123; removeCallbacks(mRunnable); &#125; mAnimator.cancel(); mIsRunning = false; mCurIndex = 0; &#125; public void setContentList(List&lt;String&gt; contentList) &#123; if (contentList == null || contentList.size() == 0) return; mContentList = contentList; start(); &#125; @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123; super.onMeasure(widthMeasureSpec, heightMeasureSpec); mWidth = MeasureSpec.getSize(widthMeasureSpec); mPaddingLeft = getPaddingLeft(); mPaddingRight = getPaddingRight(); mPaddingTop = getPaddingTop(); mPaddingBottom = getPaddingBottom(); mPaint.setTextSize(getTextSize()); mFontMetrics = mPaint.getFontMetrics(); mTextBaseY = -mFontMetrics.top + mPaddingTop; mHeight = Math.round(mFontMetrics.bottom - mFontMetrics.top) + mPaddingTop + mPaddingBottom; setMeasuredDimension(mWidth, mHeight); &#125; @Override protected void onDraw(Canvas canvas) &#123; super.onDraw(canvas); float curStartX = mPaddingLeft + mPaint.measureText(mCurStr) / 2; float nextStartX = mPaddingLeft + mPaint.measureText(mNextStr) / 2; float baseY = 2 * mTextBaseY * (0.5f - mCurValue); if (baseY &gt; 0) &#123; canvas.drawText(mCurStr, curStartX, baseY, mPaint); &#125; else &#123; canvas.drawText(mNextStr, nextStartX, 2 * mTextBaseY + baseY, mPaint); &#125; &#125;&#125;]]></content>
+      <categories>
+        <category>Android</category>
+        <category>View</category>
+      </categories>
+      <tags>
+        <tag>View</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[ViewModel,LiveData和Lifecycle]]></title>
     <url>%2F2019%2F12%2F21%2FAndroid%2FViewModel-LiveData%E5%92%8CLifeCricle%2F</url>
-    <content type="text"><![CDATA[ViewModelViewModel通常在Activity、Fragment 的生命周期内被创建并且与之关联在一起直到Activity 被 finish 掉。(也就是说使用ViewModel并不会像MVP模式的Presenter一样会内存泄漏的风险)当 Activity、Fragment 被重新创建的时候，通过 ViewModelProvides 可以重新获得与之关联的 ViewModel，从而确保数据不会丢失。 从Activity和Fragment中获取ViewModel实例:12// 有可能是创建ViewModel有可能是重新连接已有的ViewModelXxxxViewModel XxxxViewModel = ViewModelProviders.of(this).get(XxxxViewModel.class); ViewModelProviders: (不同于ViewModelProvider)12345678910@NonNull@MainThreadpublic static ViewModelProvider of(@NonNull FragmentActivity activity, @Nullable Factory factory) &#123; Application application = checkApplication(activity); if (factory == null) &#123; factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application); &#125; return new ViewModelProvider(ViewModelStores.of(activity), factory);&#125; ViewModelStores: (不同于ViewModelStore)ViewModelStores.of:12345678910@NonNull@MainThreadpublic static ViewModelStore of(@NonNull FragmentActivity activity) &#123; if (activity instanceof ViewModelStoreOwner) &#123; // ViewModelStoreOwner是一个接口，只有一个方法，在 27.1.0 的 Fragment和Activity 已经实现了该接口 return ((ViewModelStoreOwner) activity).getViewModelStore(); &#125; // 兼容27.1.0以下版本的 support 库. return holderFragmentFor(activity).getViewModelStore(); &#125; 1234567891011121314151617181920// 27.1.0 以下的版本 google 则通过创建一个不可见的实现 ViewModelStoreOwner接口的 fragment 去做兼容HolderFragment holderFragmentFor(FragmentActivity activity) &#123; FragmentManager fm = activity.getSupportFragmentManager(); HolderFragment holder = findHolderFragment(fm); if (holder != null) &#123; return holder; &#125; holder = mNotCommittedActivityHolders.get(activity); if (holder != null) &#123; return holder; &#125; if (!mActivityCallbacksIsAdded) &#123; mActivityCallbacksIsAdded = true; activity.getApplication().registerActivityLifecycleCallbacks(mActivityCallbacks); //注册生命周期，activity 销毁时将 HolderFragment 从 mNotCommittedActivityHolders 移除 &#125; holder = createHolderFragment(fm); mNotCommittedActivityHolders.put(activity, holder); return holder;&#125; ViewModelProviderViewModelProvider.get:1234567891011121314151617181920@MainThreadpublic &lt;T extends ViewModel&gt; T get(@NonNull String key, @NonNull Class&lt;T&gt; modelClass) &#123; ViewModel viewModel = mViewModelStore.get(key); // 可以看出ViewModelStore是存储ViewModel的地方 if (modelClass.isInstance(viewModel)) &#123; //noinspection unchecked return (T) viewModel; &#125; else &#123; //noinspection StatementWithEmptyBody if (viewModel != null) &#123; // TODO: log a warning. &#125; &#125; viewModel = mFactory.create(modelClass); mViewModelStore.put(key, viewModel); //noinspection unchecked return (T) viewModel;&#125; ViewModel的销毁FragmentActivity:(API27+, 实现了ViewModelStoreOwner接口)12345678910protected void onDestroy() &#123; super.onDestroy(); // isChangingConfigurations()判断应用是否处于参数改变的情况, 比如横竖屏切换 // 所以横竖屏切换并不会清楚掉ViewModelStore中的ViewModel if (this.mViewModelStore != null &amp;&amp; !this.isChangingConfigurations()) &#123; this.mViewModelStore.clear(); &#125; this.mFragments.dispatchDestroy();&#125; HolderFragment: (API27以下, 通过添加HolderFragment)12345@Overridepublic void onDestroy() &#123; super.onDestroy(); mViewModelStore.clear();&#125; 在Fragment间共享数据(共享ViewModel)1ViewModel viewModel = ViewModelProviders.of(getActivity()).get(UserViewModel::class.java) 总结: ViewModel的存储 ViewModel存储在ViewModelStore中. Activity和Fragment会持有ViewModelStore实例, 存储ViewModel集合(MVVM中一个View中可能对应多个ViewModel) 在Ativity和Framgent销毁重建时, 会通过某种方式保存ViewModelStore(还不清楚时怎么保存的…) ViewModelProviders, 从Fragment和Activity中获取ViewModelStore对象, 并new实例化出一个ViewModelProvider对象 LifecycleLifecycle的STATE和Activity生命周期的对应关系12345678public enum State&#123; DESTROYED, INITIALIZED, CREATED, STARTED, RESUMED;&#125; DESTROYED，在组件的onDestroy调用前，会变成该状态，变成此状态后将不会再出现任何状态改变，也不会发送任何生命周期事件 INITIALIZED，构造函数执行完成后但onCreate未执行时为此状态，是最开始时的状态 CREATED，在onCreate调用之后，以及onStop调用前会变成此状态 STARTED，在onStart调用之后，以及onPause调用前会变成此状态 RESUMED，再onResume调用之后会变成此状态 LifecycleOwner接口LifecycleOwner是Lifecycle组件包中的一个接口，所有需要管理生命周期的类型都必须实现这个接口。 只要继承这些类型，可以轻松的通过LifecycleOwner#getLifecycle()获取到Lifecycle实例.这是一种解耦实现,LifecycleOwner不包含任何有关生命周期管理的逻辑,实际的逻辑都在Lifecycle实例中,我们可以通过传递Lifecycle实例而非LifecycleOwner来防止内存泄漏. 需要注意的是并不是所有的google官方的Actiivyt和Fragment类都实现了LifecycleOwner接口, 实现了这个接口有v4包下的Fragment, FragmentActivity和AppCompatActivity SupportActivity类中对Lifecycle的使用12// 这个类继承自Lifecycle类private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this); 12345// SupportActiity类中只有onSaveInstanceState调用了Lifecycle的相关方法protected void onSaveInstanceState(Bundle outState) &#123; this.mLifecycleRegistry.markState(State.CREATED); super.onSaveInstanceState(outState);&#125; 我们在查看源码时发现 Lifecycle 只在 Activity 的 onSaveInstanceState 中 调用了 mLifecycleRegistry.markState(Lifecycle.State.CREATED) 方法，在其他生命周期中并没有 Lifecycle 的相关代码，那 support 库中是怎么做到 disptch event 的呢？ ReportFragment在SupportActivity的onCreate方法中有一行代码, 它创建了一个不可见的 fragment 去分发 event1234protected void onCreate(@Nullable Bundle savedInstanceState) &#123; super.onCreate(savedInstanceState); ReportFragment.injectIfNeededIn(this);&#125; 123456789101112131415161718192021@Overridepublic void onActivityCreated(Bundle savedInstanceState) &#123; super.onActivityCreated(savedInstanceState); dispatchCreate(mProcessListener); dispatch(Lifecycle.Event.ON_CREATE);&#125;private void dispatch(Lifecycle.Event event) &#123; Activity activity = getActivity(); if (activity instanceof LifecycleRegistryOwner) &#123; ((LifecycleRegistryOwner) activity).getLifecycle().handleLifecycleEvent(event); return; &#125; if (activity instanceof LifecycleOwner) &#123; Lifecycle lifecycle = ((LifecycleOwner) activity).getLifecycle(); if (lifecycle instanceof LifecycleRegistry) &#123; ((LifecycleRegistry) lifecycle).handleLifecycleEvent(event); &#125; &#125;&#125; LiveData提供一个Observer接口给客户端，客户端实现这个接口，并将引用传递给它，当我们调用 LiveData 的 setValue 或 postValue 的时候，LiveData 就会去回调这个接口的方法，其实也就是LiveData 自己实现了观察者模式。不过 LiveData 搞定了一个让我们长期以来头疼的事情，那就是当 Activity、Fragment 不可见的时候 UI 不要更新的问题，其内部其实也是监听了 LifecycleOwner 的可见和不可见的方法，当 Activity、Fragment 不可见的时候就不回调 Observer 的方法，当 Activity、Fragment 变成可见的时候，就对比最新的值和最后发出去的值是否是同一个，不同的话就发送最新的值，确保 Activity、Fragment 可见的时候用户看到的一定是最新的数据。 observe12345678910111213141516171819@MainThreadpublic void observe(@NonNull LifecycleOwner owner, @NonNull Observer&lt;T&gt; observer) &#123; if (owner.getLifecycle().getCurrentState() == DESTROYED) &#123; // ignore return; &#125; // 讲LifecycleOwner和Observer组装起来 LifecycleBoundObserver wrapper = new LifecycleBoundObserver(owner, observer); ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper); if (existing != null &amp;&amp; !existing.isAttachedTo(owner)) &#123; throw new IllegalArgumentException("Cannot add the same observer" + " with different lifecycles"); &#125; if (existing != null) &#123; return; &#125; // 讲Observer加入lifecycle的监听之中 owner.getLifecycle().addObserver(wrapper);&#125; 123456789101112131415161718192021222324252627282930313233class LifecycleBoundObserver extends ObserverWrapper implements GenericLifecycleObserver &#123; @NonNull final LifecycleOwner mOwner; LifecycleBoundObserver(@NonNull LifecycleOwner owner, Observer&lt;T&gt; observer) &#123; super(observer); mOwner = owner; &#125; @Override boolean shouldBeActive() &#123; return mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED); &#125; // 当Lifecycle的state的改变时会回调这个方法 @Override public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) &#123; if (mOwner.getLifecycle().getCurrentState() == DESTROYED) &#123; removeObserver(mObserver); return; &#125; activeStateChanged(shouldBeActive()); &#125; @Override boolean isAttachedTo(LifecycleOwner owner) &#123; return mOwner == owner; &#125; @Override void detachObserver() &#123; mOwner.getLifecycle().removeObserver(this); &#125;&#125; 1234567891011121314151617181920void activeStateChanged(boolean newActive) &#123; if (newActive == mActive) &#123; return; &#125; // immediately set active state, so we'd never dispatch anything to inactive // owner mActive = newActive; boolean wasInactive = LiveData.this.mActiveCount == 0; LiveData.this.mActiveCount += mActive ? 1 : -1; if (wasInactive &amp;&amp; mActive) &#123; onActive(); &#125; if (LiveData.this.mActiveCount == 0 &amp;&amp; !mActive) &#123; onInactive(); &#125; // 当Lifecycle的状态由不可见变为可见, 重新分发value if (mActive) &#123; dispatchingValue(this); &#125;&#125; postValue1234567891011121314151617181920212223242526272829303132protected void postValue(T value) &#123; boolean postTask; synchronized (mDataLock) &#123; postTask = mPendingData == NOT_SET; mPendingData = value; &#125; if (!postTask) &#123; return; &#125; ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);&#125;private final Runnable mPostValueRunnable = new Runnable() &#123; @Override public void run() &#123; Object newValue; synchronized (mDataLock) &#123; newValue = mPendingData; mPendingData = NOT_SET; &#125; //noinspection unchecked setValue((T) newValue); &#125;&#125;;@MainThreadprotected void setValue(T value) &#123; assertMainThread("setValue"); mVersion++; mData = value; dispatchingValue(null);&#125; postValue方法和setValue最终都会保证是在主线程执行的. 所以LiveData自动实现了线程的跳转.]]></content>
+    <content type="text"><![CDATA[ViewModelViewModel通常在Activity、Fragment 的生命周期内被创建并且与之关联在一起直到Activity 被 finish 掉。(也就是说使用ViewModel并不会像MVP模式的Presenter一样会内存泄漏的风险)当 Activity、Fragment 被重新创建的时候，通过 ViewModelProvides 可以重新获得与之关联的 ViewModel，从而确保数据不会丢失。 从Activity和Fragment中获取ViewModel实例:12// 有可能是创建ViewModel有可能是重新连接已有的ViewModelXxxxViewModel XxxxViewModel = ViewModelProviders.of(this).get(XxxxViewModel.class); ViewModelProviders: (不同于ViewModelProvider)12345678910@NonNull@MainThreadpublic static ViewModelProvider of(@NonNull FragmentActivity activity, @Nullable Factory factory) &#123; Application application = checkApplication(activity); if (factory == null) &#123; factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application); &#125; return new ViewModelProvider(ViewModelStores.of(activity), factory);&#125; ViewModelStores: (不同于ViewModelStore)ViewModelStores.of:12345678910@NonNull@MainThreadpublic static ViewModelStore of(@NonNull FragmentActivity activity) &#123; if (activity instanceof ViewModelStoreOwner) &#123; // ViewModelStoreOwner是一个接口，只有一个方法，在 27.1.0 的 Fragment和Activity 已经实现了该接口 return ((ViewModelStoreOwner) activity).getViewModelStore(); &#125; // 兼容27.1.0以下版本的 support 库. return holderFragmentFor(activity).getViewModelStore(); &#125; 1234567891011121314151617181920// 27.1.0 以下的版本 google 则通过创建一个不可见的实现 ViewModelStoreOwner接口的 fragment 去做兼容HolderFragment holderFragmentFor(FragmentActivity activity) &#123; FragmentManager fm = activity.getSupportFragmentManager(); HolderFragment holder = findHolderFragment(fm); if (holder != null) &#123; return holder; &#125; holder = mNotCommittedActivityHolders.get(activity); if (holder != null) &#123; return holder; &#125; if (!mActivityCallbacksIsAdded) &#123; mActivityCallbacksIsAdded = true; activity.getApplication().registerActivityLifecycleCallbacks(mActivityCallbacks); //注册生命周期，activity 销毁时将 HolderFragment 从 mNotCommittedActivityHolders 移除 &#125; holder = createHolderFragment(fm); mNotCommittedActivityHolders.put(activity, holder); return holder;&#125; ViewModelProviderViewModelProvider.get:1234567891011121314151617181920@MainThreadpublic &lt;T extends ViewModel&gt; T get(@NonNull String key, @NonNull Class&lt;T&gt; modelClass) &#123; ViewModel viewModel = mViewModelStore.get(key); // 可以看出ViewModelStore是存储ViewModel的地方 if (modelClass.isInstance(viewModel)) &#123; //noinspection unchecked return (T) viewModel; &#125; else &#123; //noinspection StatementWithEmptyBody if (viewModel != null) &#123; // TODO: log a warning. &#125; &#125; viewModel = mFactory.create(modelClass); mViewModelStore.put(key, viewModel); //noinspection unchecked return (T) viewModel;&#125; ViewModel的销毁FragmentActivity:(API27+, 实现了ViewModelStoreOwner接口)12345678910protected void onDestroy() &#123; super.onDestroy(); // isChangingConfigurations()判断应用是否处于参数改变的情况, 比如横竖屏切换 // 所以横竖屏切换并不会清楚掉ViewModelStore中的ViewModel if (this.mViewModelStore != null &amp;&amp; !this.isChangingConfigurations()) &#123; this.mViewModelStore.clear(); &#125; this.mFragments.dispatchDestroy();&#125; HolderFragment: (API27以下, 通过添加HolderFragment)12345678910@Overridepublic void onDestroy() &#123; super.onDestroy(); mViewModelStore.clear();&#125;``` ### 在Fragment间共享数据(共享ViewModel)```javaViewModel viewModel = ViewModelProviders.of(getActivity()).get(UserViewModel::class.java) 总结: ViewModel的存储 ViewModel存储在ViewModelStore中. Activity和Fragment会持有ViewModelStore实例, 存储ViewModel集合(MVVM中一个View中可能对应多个ViewModel) 在Ativity和Framgent销毁重建时, 会通过某种方式保存ViewModelStore(还不清楚时怎么保存的…) ViewModelProviders, 从Fragment和Activity中获取ViewModelStore对象, 并new实例化出一个ViewModelProvider对象 LifecycleLifecycle的STATE和Activity生命周期的对应关系12345678public enum State&#123; DESTROYED, INITIALIZED, CREATED, STARTED, RESUMED;&#125; DESTROYED，在组件的onDestroy调用前，会变成该状态，变成此状态后将不会再出现任何状态改变，也不会发送任何生命周期事件 INITIALIZED，构造函数执行完成后但onCreate未执行时为此状态，是最开始时的状态 CREATED，在onCreate调用之后，以及onStop调用前会变成此状态 STARTED，在onStart调用之后，以及onPause调用前会变成此状态 RESUMED，再onResume调用之后会变成此状态 LifecycleOwner接口LifecycleOwner是Lifecycle组件包中的一个接口，所有需要管理生命周期的类型都必须实现这个接口。 只要继承这些类型，可以轻松的通过LifecycleOwner#getLifecycle()获取到Lifecycle实例.这是一种解耦实现,LifecycleOwner不包含任何有关生命周期管理的逻辑,实际的逻辑都在Lifecycle实例中,我们可以通过传递Lifecycle实例而非LifecycleOwner来防止内存泄漏. 需要注意的是并不是所有的google官方的Actiivyt和Fragment类都实现了LifecycleOwner接口, 实现了这个接口有v4包下的Fragment, FragmentActivity和AppCompatActivity SupportActivity类中对Lifecycle的使用12// 这个类继承自Lifecycle类private LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this); 12345// SupportActiity类中只有onSaveInstanceState调用了Lifecycle的相关方法protected void onSaveInstanceState(Bundle outState) &#123; this.mLifecycleRegistry.markState(State.CREATED); super.onSaveInstanceState(outState);&#125; 我们在查看源码时发现 Lifecycle 只在 Activity 的 onSaveInstanceState 中 调用了 mLifecycleRegistry.markState(Lifecycle.State.CREATED) 方法，在其他生命周期中并没有 Lifecycle 的相关代码，那 support 库中是怎么做到 disptch event 的呢？ ReportFragment在SupportActivity的onCreate方法中有一行代码, 它创建了一个不可见的 fragment 去分发 event1234protected void onCreate(@Nullable Bundle savedInstanceState) &#123; super.onCreate(savedInstanceState); ReportFragment.injectIfNeededIn(this);&#125; 123456789101112131415161718192021@Overridepublic void onActivityCreated(Bundle savedInstanceState) &#123; super.onActivityCreated(savedInstanceState); dispatchCreate(mProcessListener); dispatch(Lifecycle.Event.ON_CREATE);&#125;private void dispatch(Lifecycle.Event event) &#123; Activity activity = getActivity(); if (activity instanceof LifecycleRegistryOwner) &#123; ((LifecycleRegistryOwner) activity).getLifecycle().handleLifecycleEvent(event); return; &#125; if (activity instanceof LifecycleOwner) &#123; Lifecycle lifecycle = ((LifecycleOwner) activity).getLifecycle(); if (lifecycle instanceof LifecycleRegistry) &#123; ((LifecycleRegistry) lifecycle).handleLifecycleEvent(event); &#125; &#125;&#125; LiveData提供一个Observer接口给客户端，客户端实现这个接口，并将引用传递给它，当我们调用 LiveData 的 setValue 或 postValue 的时候，LiveData 就会去回调这个接口的方法，其实也就是LiveData 自己实现了观察者模式。不过 LiveData 搞定了一个让我们长期以来头疼的事情，那就是当 Activity、Fragment 不可见的时候 UI 不要更新的问题，其内部其实也是监听了 LifecycleOwner 的可见和不可见的方法，当 Activity、Fragment 不可见的时候就不回调 Observer 的方法，当 Activity、Fragment 变成可见的时候，就对比最新的值和最后发出去的值是否是同一个，不同的话就发送最新的值，确保 Activity、Fragment 可见的时候用户看到的一定是最新的数据。 observe12345678910111213141516171819@MainThreadpublic void observe(@NonNull LifecycleOwner owner, @NonNull Observer&lt;T&gt; observer) &#123; if (owner.getLifecycle().getCurrentState() == DESTROYED) &#123; // ignore return; &#125; // 讲LifecycleOwner和Observer组装起来 LifecycleBoundObserver wrapper = new LifecycleBoundObserver(owner, observer); ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper); if (existing != null &amp;&amp; !existing.isAttachedTo(owner)) &#123; throw new IllegalArgumentException("Cannot add the same observer" + " with different lifecycles"); &#125; if (existing != null) &#123; return; &#125; // 讲Observer加入lifecycle的监听之中 owner.getLifecycle().addObserver(wrapper);&#125; 123456789101112131415161718192021222324252627282930313233class LifecycleBoundObserver extends ObserverWrapper implements GenericLifecycleObserver &#123; @NonNull final LifecycleOwner mOwner; LifecycleBoundObserver(@NonNull LifecycleOwner owner, Observer&lt;T&gt; observer) &#123; super(observer); mOwner = owner; &#125; @Override boolean shouldBeActive() &#123; return mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED); &#125; // 当Lifecycle的state的改变时会回调这个方法 @Override public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) &#123; if (mOwner.getLifecycle().getCurrentState() == DESTROYED) &#123; removeObserver(mObserver); return; &#125; activeStateChanged(shouldBeActive()); &#125; @Override boolean isAttachedTo(LifecycleOwner owner) &#123; return mOwner == owner; &#125; @Override void detachObserver() &#123; mOwner.getLifecycle().removeObserver(this); &#125;&#125; 1234567891011121314151617181920void activeStateChanged(boolean newActive) &#123; if (newActive == mActive) &#123; return; &#125; // immediately set active state, so we'd never dispatch anything to inactive // owner mActive = newActive; boolean wasInactive = LiveData.this.mActiveCount == 0; LiveData.this.mActiveCount += mActive ? 1 : -1; if (wasInactive &amp;&amp; mActive) &#123; onActive(); &#125; if (LiveData.this.mActiveCount == 0 &amp;&amp; !mActive) &#123; onInactive(); &#125; // 当Lifecycle的状态由不可见变为可见, 重新分发value if (mActive) &#123; dispatchingValue(this); &#125;&#125; postValue1234567891011121314151617181920212223242526272829303132protected void postValue(T value) &#123; boolean postTask; synchronized (mDataLock) &#123; postTask = mPendingData == NOT_SET; mPendingData = value; &#125; if (!postTask) &#123; return; &#125; ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);&#125;private final Runnable mPostValueRunnable = new Runnable() &#123; @Override public void run() &#123; Object newValue; synchronized (mDataLock) &#123; newValue = mPendingData; mPendingData = NOT_SET; &#125; //noinspection unchecked setValue((T) newValue); &#125;&#125;;@MainThreadprotected void setValue(T value) &#123; assertMainThread("setValue"); mVersion++; mData = value; dispatchingValue(null);&#125; postValue方法和setValue最终都会保证是在主线程执行的. 所以LiveData自动实现了线程的跳转.]]></content>
   </entry>
   <entry>
     <title><![CDATA[Glide源码-缓存机制]]></title>
@@ -13,8 +25,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -25,8 +37,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -37,8 +49,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -49,8 +61,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -61,8 +73,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -73,8 +85,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -134,8 +146,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -147,9 +159,9 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
         <tag>RecyclerView</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -171,8 +183,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -193,8 +205,8 @@
     <url>%2F2019%2F08%2F13%2FAndroid%2FLayoutInflater%E8%A7%A3%E6%9E%90%2F</url>
     <content type="text"><![CDATA[LayoutInflater解析源码1View result = root; 12345678910111213// Temp is the root view that was found in the xmlfinal View temp = createViewFromTag(root, name, inflaterContext, attrs);ViewGroup.LayoutParams params = null;if (root != null) &#123; // Create layout params that match root, if supplied params = root.generateLayoutParams(attrs); if (!attachToRoot) &#123; // Set the layout params for temp if we are not // attaching. (If we are, we use addView, below) temp.setLayoutParams(params); &#125;&#125; 123456789101112131415// Inflate all children under temp against its context.rInflateChildren(parser, temp, attrs, true);// We are supposed to attach all the views we found (int temp)// to root. Do that now.if (root != null &amp;&amp; attachToRoot) &#123; root.addView(temp, params);&#125;// Decide whether to return the root that was passed in or the// top view found in xml.if (root == null || !attachToRoot) &#123; result = temp;&#125; 1return result; 使用方法1LayoutInflater.from(context).inflate(int resource, ViewGroup root, boolean attachToRoot) ; 第一个参数是layout资源文件id 第二个参数是父布局。 当第二个参数为null时，将不会为inflate出来的view添加layoutParam 第三个参数是是否加入到父布局中。若为空，则，调用root.addView直接加入到父布局中 需要注意的是，当root!=null，且attachToRoot为true时，Inflater返回的父布局的view，而不是解析出的view]]></content>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -319,8 +331,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>内存泄露</tag>
         <tag>MVP</tag>
+        <tag>内存泄露</tag>
       </tags>
   </entry>
   <entry>
@@ -354,8 +366,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>Handler</tag>
         <tag>内存泄露</tag>
+        <tag>Handler</tag>
       </tags>
   </entry>
   <entry>
