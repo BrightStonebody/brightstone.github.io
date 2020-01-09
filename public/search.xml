@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[外部View随着RecyclerView的滚动而显示或隐藏]]></title>
+    <url>%2F2020%2F01%2F09%2FAndroid%2F%E5%A4%96%E9%83%A8View%E9%9A%8F%E7%9D%80RecyclerView%E7%9A%84%E6%BB%9A%E5%8A%A8%E8%80%8C%E6%98%BE%E7%A4%BA%E6%88%96%E9%9A%90%E8%97%8F%2F</url>
+    <content type="text"><![CDATA[外部的View上滑显示, 下滑隐藏1234567891011121314151617181920212223242526272829mOutsideOnScrollListener = new OnScrollListener() &#123; boolean controlsVisible = false; int scrolledDistance = 0; @Override public void onScrollStateChanged(int newState) &#123; if (newState == RecyclerView.SCROLL_STATE_IDLE) &#123; scrolledDistance = 0; &#125; &#125; @Override public void onScrolled(int dx, int dy) &#123; if ((controlsVisible &amp;&amp; dy &lt; 0) || (!controlsVisible &amp;&amp; dy &gt; 0)&#123; scrolledDistance += dy; &#125; if (scrolledDistance &lt; thresholdToShow &amp;&amp; controlsVisible) &#123; //UP scrolledDistance = 0; controlsVisible = false; view.onShow(); &#125; else if (scrolledDistance &gt;= thresholdToHide &amp;&amp; !controlsVisible) &#123; //DOWN scrolledDistance = 0; controlsVisible = true; view.onPause(); &#125; &#125;&#125;; 我们计算总的滚动距离（每一次滚动的总和）。但是，我们只关心View隐藏时的向上滑动或者View显示时的向下滑动，因为这些是我们所关心的情况。 123if ((controlsVisible &amp;&amp; dy &lt; 0) || (!controlsVisible &amp;&amp; dy &gt; 0)) &#123; scrolledDistance += dy;&#125; 如果当滚动值超过某个阈值（你可以设置阈值，值越大，需要滚动滚动更多的距离，才能看到显示/隐藏View的效果）。我们根据滚动的方向来显示/隐藏View（DY＞0意味着我们向下滚动，Dy＜0意味着我们向上滚动）。 1234567891011if (scrolledDistance &lt; thresholdToShow &amp;&amp; controlsVisible) &#123; //UP scrolledDistance = 0; controlsVisible = false; view.onResume();&#125; else if (scrolledDistance &gt;= thresholdToHide &amp;&amp; !controlsVisible) &#123; //DOWN scrolledDistance = 0; controlsVisible = true; view.onPause();&#125;]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>RecyclerView</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[自动滚播TextView]]></title>
     <url>%2F2019%2F12%2F31%2FAndroid%2F%E8%87%AA%E5%8A%A8%E6%BB%9A%E6%92%ADTextView%2F</url>
     <content type="text"><![CDATA[要实现一个自动滚播的自定义View123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156public class AutoSwitchView extends AppCompatTextView &#123; private final int DEFAULT_IDLE_TIME = 3000; private final int DEFAULT_SWITCH_TIME = 1000; private int mIdleTime = DEFAULT_IDLE_TIME; private int mSwitchTime = DEFAULT_SWITCH_TIME; private Paint mPaint; private String mCurStr; private String mNextStr; private List&lt;String&gt; mContentList; private int mCurIndex = 0; private float mCurValue; private boolean mIsRunning = false; private ValueAnimator mAnimator; private Paint.FontMetrics mFontMetrics; private Runnable mRunnable; private int mWidth; private int mPaddingLeft; private int mPaddingRight; private int mPaddingTop; private int mPaddingBottom; private int mHeight; private float mTextBaseY; public AutoSwitchView(Context context) &#123; super(context); init(context); &#125; public AutoSwitchView(Context context, @Nullable AttributeSet attrs) &#123; super(context, attrs); init(context); &#125; public AutoSwitchView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) &#123; super(context, attrs, defStyleAttr); init(context); &#125; private void init(Context context) &#123; mPaint = new Paint(); mPaint.setTextAlign(Paint.Align.CENTER); mAnimator = ValueAnimator.ofFloat(0, 1); mAnimator.setStartDelay(mIdleTime); mAnimator.setDuration(mSwitchTime); mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() &#123; @Override public void onAnimationUpdate(ValueAnimator animation) &#123; mCurValue = (float) animation.getAnimatedValue(); // 必须要加这个判断, 不然会出现问题 if (mCurValue &lt; 1.0) &#123; invalidate(); &#125; &#125; &#125;); mAnimator.addListener(new AnimatorListenerAdapter() &#123; @Override public void onAnimationEnd(Animator animation, boolean isReverse) &#123; if (!mIsRunning) &#123; return; &#125; mCurIndex = (mCurIndex + 1) % mContentList.size(); mCurStr = mContentList.get(mCurIndex); mNextStr = mContentList.get((mCurIndex + 1) % mContentList.size()); if (mRunnable == null) &#123; mRunnable = new Runnable() &#123; @Override public void run() &#123; mAnimator.start(); &#125; &#125;; &#125; postDelayed(mRunnable, mIdleTime); &#125; @Override public void onAnimationCancel(Animator animation) &#123; mIsRunning = false; &#125; &#125;); &#125; public void start() &#123; if (mContentList == null || mContentList.size() == 0) return; if (mIsRunning) &#123; return; &#125; if (mContentList.size() &gt; 1) &#123; mCurStr = mContentList.get(0); mNextStr = mContentList.get(1); &#125; else &#123; mCurStr = mContentList.get(0); mNextStr = mContentList.get(0); &#125; mCurIndex = 0; mIsRunning = true; mAnimator.start(); mAnimator.setStartDelay(mIdleTime); &#125; public void stop() &#123; if (mRunnable != null) &#123; removeCallbacks(mRunnable); &#125; mAnimator.cancel(); mIsRunning = false; mCurIndex = 0; &#125; public void setContentList(List&lt;String&gt; contentList) &#123; if (contentList == null || contentList.size() == 0) return; mContentList = contentList; start(); &#125; @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123; super.onMeasure(widthMeasureSpec, heightMeasureSpec); mWidth = MeasureSpec.getSize(widthMeasureSpec); mPaddingLeft = getPaddingLeft(); mPaddingRight = getPaddingRight(); mPaddingTop = getPaddingTop(); mPaddingBottom = getPaddingBottom(); mPaint.setTextSize(getTextSize()); mFontMetrics = mPaint.getFontMetrics(); mTextBaseY = -mFontMetrics.top + mPaddingTop; mHeight = Math.round(mFontMetrics.bottom - mFontMetrics.top) + mPaddingTop + mPaddingBottom; setMeasuredDimension(mWidth, mHeight); &#125; @Override protected void onDraw(Canvas canvas) &#123; super.onDraw(canvas); float curStartX = mPaddingLeft + mPaint.measureText(mCurStr) / 2; float nextStartX = mPaddingLeft + mPaint.measureText(mNextStr) / 2; float baseY = 2 * mTextBaseY * (0.5f - mCurValue); if (baseY &gt; 0) &#123; canvas.drawText(mCurStr, curStartX, baseY, mPaint); &#125; else &#123; canvas.drawText(mNextStr, nextStartX, 2 * mTextBaseY + baseY, mPaint); &#125; &#125;&#125;]]></content>
@@ -25,8 +36,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>glide</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -37,8 +48,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>glide</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -49,8 +60,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>okhttp3</tag>
         <tag>源码解析</tag>
+        <tag>okhttp3</tag>
       </tags>
   </entry>
   <entry>
@@ -61,8 +72,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>okhttp3</tag>
         <tag>源码解析</tag>
+        <tag>okhttp3</tag>
       </tags>
   </entry>
   <entry>
@@ -73,8 +84,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>okhttp3</tag>
         <tag>源码解析</tag>
+        <tag>okhttp3</tag>
       </tags>
   </entry>
   <entry>
@@ -85,8 +96,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>okhttp3</tag>
         <tag>源码解析</tag>
+        <tag>okhttp3</tag>
       </tags>
   </entry>
   <entry>
@@ -146,8 +157,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>View</tag>
         <tag>Android</tag>
+        <tag>View</tag>
       </tags>
   </entry>
   <entry>
@@ -159,9 +170,9 @@
         <category>View</category>
       </categories>
       <tags>
+        <tag>Android</tag>
         <tag>View</tag>
         <tag>RecyclerView</tag>
-        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -183,8 +194,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>View</tag>
         <tag>Android</tag>
+        <tag>View</tag>
       </tags>
   </entry>
   <entry>
@@ -205,8 +216,8 @@
     <url>%2F2019%2F08%2F13%2FAndroid%2FLayoutInflater%E8%A7%A3%E6%9E%90%2F</url>
     <content type="text"><![CDATA[LayoutInflater解析源码1View result = root; 12345678910111213// Temp is the root view that was found in the xmlfinal View temp = createViewFromTag(root, name, inflaterContext, attrs);ViewGroup.LayoutParams params = null;if (root != null) &#123; // Create layout params that match root, if supplied params = root.generateLayoutParams(attrs); if (!attachToRoot) &#123; // Set the layout params for temp if we are not // attaching. (If we are, we use addView, below) temp.setLayoutParams(params); &#125;&#125; 123456789101112131415// Inflate all children under temp against its context.rInflateChildren(parser, temp, attrs, true);// We are supposed to attach all the views we found (int temp)// to root. Do that now.if (root != null &amp;&amp; attachToRoot) &#123; root.addView(temp, params);&#125;// Decide whether to return the root that was passed in or the// top view found in xml.if (root == null || !attachToRoot) &#123; result = temp;&#125; 1return result; 使用方法1LayoutInflater.from(context).inflate(int resource, ViewGroup root, boolean attachToRoot) ; 第一个参数是layout资源文件id 第二个参数是父布局。 当第二个参数为null时，将不会为inflate出来的view添加layoutParam 第三个参数是是否加入到父布局中。若为空，则，调用root.addView直接加入到父布局中 需要注意的是，当root!=null，且attachToRoot为true时，Inflater返回的父布局的view，而不是解析出的view]]></content>
       <tags>
-        <tag>View</tag>
         <tag>Android</tag>
+        <tag>View</tag>
       </tags>
   </entry>
   <entry>
@@ -331,8 +342,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>MVP</tag>
         <tag>内存泄露</tag>
+        <tag>MVP</tag>
       </tags>
   </entry>
   <entry>
@@ -366,8 +377,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>内存泄露</tag>
         <tag>Handler</tag>
+        <tag>内存泄露</tag>
       </tags>
   </entry>
   <entry>
