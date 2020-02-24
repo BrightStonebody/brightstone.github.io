@@ -18,8 +18,6 @@ Baseline上方的值为正，下方的值为负
 
 相关参数包括：
 
-* 所使用字体(fallback的话不影响)的UPM(Units Per EM)
-
 * ascent/descent属性
 
 * top/bottom参数
