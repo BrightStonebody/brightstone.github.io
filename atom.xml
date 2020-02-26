@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-02-19T03:16:02.710Z</updated>
+  <updated>2020-02-26T07:54:10.867Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Flutter中常用布局和Android的对应关系</title>
+    <link href="http://yoursite.com/2020/02/26/Flutter/Flutter%E4%B8%AD%E5%B8%B8%E7%94%A8%E5%B8%83%E5%B1%80%E5%92%8CAndroid%E7%9A%84%E5%AF%B9%E5%BA%94%E5%85%B3%E7%B3%BB/"/>
+    <id>http://yoursite.com/2020/02/26/Flutter/Flutter中常用布局和Android的对应关系/</id>
+    <published>2020-02-26T07:49:51.000Z</published>
+    <updated>2020-02-26T07:54:10.867Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/flutter相关属性和android的对应关系.webp" alt="图片"></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;img src=&quot;/images/flutter相关属性和android的对应关系.webp&quot; alt=&quot;图片&quot;&gt;&lt;/p&gt;
+      
+    
+    </summary>
+    
+      <category term="Flutter" scheme="http://yoursite.com/categories/Flutter/"/>
+    
+    
+      <category term="Flutter" scheme="http://yoursite.com/tags/Flutter/"/>
+    
+  </entry>
   
   <entry>
     <title>ViewDragHelper的使用</title>
@@ -472,28 +497,6 @@
       <category term="View" scheme="http://yoursite.com/tags/View/"/>
     
       <category term="源码解析" scheme="http://yoursite.com/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>LayoutInflater解析</title>
-    <link href="http://yoursite.com/2019/08/13/Android/LayoutInflater%E8%A7%A3%E6%9E%90/"/>
-    <id>http://yoursite.com/2019/08/13/Android/LayoutInflater解析/</id>
-    <published>2019-08-13T12:31:21.000Z</published>
-    <updated>2019-12-21T12:16:41.874Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="LayoutInflater解析"><a href="#LayoutInflater解析" class="headerlink" title="LayoutInflater解析"></a>LayoutInflater解析</h1><h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">View result = root;</span><br></pre></td></tr></table></figure><a id="more"></a><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Temp is the root view that was found in the xml</span><br><span class="line">final View temp = createViewFromTag(root, name, inflaterContext, attrs);</span><br><span class="line"></span><br><span class="line">ViewGroup.LayoutParams params = null;</span><br><span class="line">if (root != null) &#123;</span><br><span class="line">    // Create layout params that match root, if supplied</span><br><span class="line">    params = root.generateLayoutParams(attrs);</span><br><span class="line">    if (!attachToRoot) &#123;</span><br><span class="line">        // Set the layout params for temp if we are not</span><br><span class="line">        // attaching. (If we are, we use addView, below)</span><br><span class="line">        temp.setLayoutParams(params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// Inflate all children under temp against its context.</span><br><span class="line"></span><br><span class="line">rInflateChildren(parser, temp, attrs, true);</span><br><span class="line"></span><br><span class="line">// We are supposed to attach all the views we found (int temp)</span><br><span class="line">// to root. Do that now.</span><br><span class="line">if (root != null &amp;&amp; attachToRoot) &#123;</span><br><span class="line">    root.addView(temp, params);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Decide whether to return the root that was passed in or the</span><br><span class="line">// top view found in xml.</span><br><span class="line">if (root == null || !attachToRoot) &#123;</span><br><span class="line">    result = temp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return result;</span><br></pre></td></tr></table></figure><h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LayoutInflater.from(context).inflate(int resource, ViewGroup root, boolean attachToRoot) ;</span><br></pre></td></tr></table></figure><ul><li>第一个参数是layout资源文件id</li><li>第二个参数是父布局。 当第二个参数为null时，将不会为inflate出来的view添加layoutParam</li><li>第三个参数是是否加入到父布局中。若为空，则，调用root.addView直接加入到父布局中</li></ul><p><strong>需要注意的是，当root!=null，且attachToRoot为true时，Inflater返回的父布局的view，而不是解析出的view</strong></p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;LayoutInflater解析&quot;&gt;&lt;a href=&quot;#LayoutInflater解析&quot; class=&quot;headerlink&quot; title=&quot;LayoutInflater解析&quot;&gt;&lt;/a&gt;LayoutInflater解析&lt;/h1&gt;&lt;h2 id=&quot;源码&quot;&gt;&lt;a href=&quot;#源码&quot; class=&quot;headerlink&quot; title=&quot;源码&quot;&gt;&lt;/a&gt;源码&lt;/h2&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;View result = root;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-    
-    </summary>
-    
-    
-      <category term="Android" scheme="http://yoursite.com/tags/Android/"/>
-    
-      <category term="View" scheme="http://yoursite.com/tags/View/"/>
     
   </entry>
   
