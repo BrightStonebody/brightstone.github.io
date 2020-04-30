@@ -31,6 +31,9 @@ public static ViewDragHelper create(@NonNull ViewGroup forParent, @NonNull ViewD
 @Override
 public boolean onInterceptTouchEvent(MotionEvent ev) {
     //ViewDragHelper对事件进行拦截
+    //注意, ACTION_DOWN事件不会被拦截
+    //当clampViewPositionXxx方法没有修改left或top值时, 不会拦截
+    //是的, shouldInterceptTouchEvent中会调用callback.clampViewPositionXxx方法
     return mViewDragHelper.shouldInterceptTouchEvent(ev);
 }
 

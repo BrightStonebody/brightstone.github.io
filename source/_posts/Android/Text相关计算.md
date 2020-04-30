@@ -18,13 +18,17 @@ Baseline上方的值为正，下方的值为负
 
 相关参数包括：
 
-* ascent/descent属性
+* 基准点是baseline
 
-* top/bottom参数
+* Ascent是baseline之上至字符最高处的距离
 
-**禁止includePadding时, TextView实际占据高度是 (ascent - descent) / UPM * textSize**
+* Descent是baseline之下至字符最低处的距离
 
-**开启includePadding时, TextView实际占据高度是 (top - bottom) / UPM * textSize**
+* 其实是上一行字符的descent到下一行的ascent之间的距离
+
+* Top指的是指的是最高字符到baseline的值，即ascent的最大值
+
+* 同上，bottom指的是最下字符到baseline的值，即descent的最大值
 
 ## 参考
 [Paint 绘制文字属性](https://www.jianshu.com/p/1728b725b4a6)
