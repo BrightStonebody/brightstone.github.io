@@ -81,13 +81,25 @@ public interface ViewModelStoreOwner {
 }
 ```
 #### 实现了ViewModelStoreOwner接口
-FragmentActivity：
+
+FragmentActivity
+```java
+public class FragmentActivity extends SupportActivity implements ViewModelStoreOwner, ...{
+    private ViewModelStore mViewModelStore;
+        
+    public ViewModelStore getViewModelStore() {
+        ...
+    }
+}
+```
+
 实现了ViewModelStoreOwner接口的FragmentActivity会直接持有ViewModelStore的引用
 
 主要关注三个方法：
 getViewModelStore()
 onCreate()
 onRetainNonConfigurationInstance()
+
 ```java
 public ViewModelStore getViewModelStore() {
     if (this.getApplication() == null) {
@@ -139,8 +151,10 @@ public final Object onRetainNonConfigurationInstance() {
       return nci;
 }
 ```
+
 ViewModelStore在onCreate里会从NonConfigurationInstances里尝试取出，然后在onRetainNonConfigurationInstanc方法中保存到NonConfigurationInstances。
 onRetainNonConfigurationInstance何时被调用，数据又是怎样保存的呢？了解过Activity启动流程的都知道ActivityThread，它控制着Activity的生命周期，当ActivityThread执行performDestroyActivity这个方法时，会调用Activity#retainNonConfigurationInstances获取到保存的数据并保存到ActivityClientRecord中。
+
 ```java
 ActivityClientRecord performDestroyActivity(IBinder token, boolean finishing, int configChanges, boolean getNonConfigInstance, String reason) {
    ...
@@ -155,7 +169,9 @@ ActivityClientRecord performDestroyActivity(IBinder token, boolean finishing, in
    return r;
 }
 ```
+
 当页面重建完成,ActivityThread执行了performLaunchActivity方法时，会调用Activity的attach方法,便会把刚刚存储的数据，传递进去。
+
 ```java
 private Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) {
     ...
@@ -163,11 +179,13 @@ private Activity performLaunchActivity(ActivityClientRecord r, Intent customInte
     ...
 }
 ```
+
 总结：Activity对应的ViewModel保存在ViewModelStore里，FragmentActivity持有ViewModelStore的引用，Activity因配置原因销毁-重建时，ViewModelStore被NonConfigurationInstances保存，重建时从保存处恢复。
 
 #### 未实现ViewModelStoreOwner接口
 
 低版本未实现ViewModelStoreOwner接口，采取的方法是在Activity中注入一个不可见的HolderFragment
+
 ```java
 public static ViewModelStore of(@NonNull FragmentActivity activity) {
     if (activity instanceof ViewModelStoreOwner) {
@@ -176,7 +194,9 @@ public static ViewModelStore of(@NonNull FragmentActivity activity) {
     return holderFragmentFor(activity).getViewModelStore();
 }
 ```
+
 HolderFragment:
+
 ```java
 public class HolderFragment extends Fragment implements ViewModelStoreOwner { 
     private static final HolderFragmentManager sHolderFragmentManager = new HolderFragmentManager();
@@ -193,11 +213,13 @@ public class HolderFragment extends Fragment implements ViewModelStoreOwner {
     }
 }
 ```
+
 HolderFragment持有mViewModelStore的引用。在HolderFragment的构造方法中，调用了`setRetainInstance(true)`。
 控制一个fragment实例是否在activity因为配置改变而销毁重建的时候被保留。如果设置为true, fragment在activity销毁重建的时候将会被保留。同时，fragment的生命周期将会发生改变，当Activity销毁重建时，fragment生命周期中的onCreate和onDestroy将不会被执行。
 
 总结：HolderFragment实现了ViewModelStoreOwner接口，持有mViewModelStore的引用。由于Fragment和activity的生命周期是绑定的，Fragment内部可以感知到activity的生命周期。同时，通过setRetainInstance(true)，当activity被销毁重建的时候，HolderFragment并不会被销毁，导致mViewModelStore也不会被销毁
 ViewModel的销毁：
+
 FragmentActivity#onDestroy
 ```java
 @Override
@@ -211,6 +233,7 @@ protected void onDestroy() {
     this.mFragments.dispatchDestroy();
 }
 ```
+
 HolderFragment#onDestroy
 ```java
 @Override
@@ -229,21 +252,27 @@ public final void clear() {
     mMap.clear();
 }
 ```
+
 ### ViewModel实现更进一步的数据持久化
+
 上面的是 activity 在因为配置改变，销毁重建的情况，在这种情况下，ViewModel 可以自动实现数据保留和现场恢复。
 还有一种情况是，App进入后台，然后因为内存紧张，activity 被系统销毁，然后用户再次打开，activity重建。这种情况下，ViewModel默认是不能实现现场恢复的，需要借助 SavedStateHandle。
 可以简单的把 SavedStateHandle 理解为 onSaveInstanceState()的逻辑从 activity 转移到了ViewModel 中。
+
 要想使用 SavedStateHandle 需要额外导入包：
 ```
 implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.0-alpha01'
 ```
+
 然后在获取ViewModel时使用 SavedStateViewModelFactory
 ```java
 viewModel = ViewModelProviders.of(this, 
                     new SavedStateViewModelFactory(getApplication(), this))
                     .get(SaveStateTestViewModel.class);
 ```
+
 然后在ViewModel的构造方法里传入SavedStateHandle实例，然后就可以通过SavedStateHandle保存和读取数据了。
+
 ```java
 public class SaveStateTestViewModel extends ViewModel {
     private SavedStateHandle savedStateHandle;
@@ -267,8 +296,11 @@ public class SaveStateTestViewModel extends ViewModel {
     }
 }
 ```
+
 和 onSaveInstanceState() 的保存和恢复方式一样，不能保存复杂的数据，只能保存可以存入Bundle的那些类型。 也可以SavedStateHandle中使用LiveData的方式进行保存，这样的话稍微有那么一点的好处是你不需要特意的save和get数据，直接把在初始化的时候替换成SavedStateHandle#getLiveData就可以了
+
 ## 2. Lifecycles
+
 Lifecycles组件是为了方便感知Activity和Fragment的生命周期而出现的，它可以让任何一个类都能轻松感知到Activity的生命周期，同时又不需要在Activity中编写大量的逻辑处理。
 Lifecycle包含在support library 26.1.0及之后的依赖包中，如果我们的项目基于这些依赖包，那么不需要额外的引用。support library在26.1.0之前，需要我们引入另外的包。
 
@@ -381,6 +413,7 @@ public class ReportFragment extends Fragment {
 }
 ```
 ### LifecycleRegistry#addObserver
+
 LifecycleRegistry继承了Lifecycle，是Activity和Fragment生命周期的真正管理类。 这个类里面的很多逻辑有点绕，我不太能理清楚。主要看一下addObserver这个方法：
 
 ```java
@@ -471,6 +504,7 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 可以看到从ON_CREATE到ON_RESUME在同一时刻都打印出来了
 
 ### ProcessLifecycleOwner
+
 ProcessLifecycleOwner实现了LifecycleOwner接口，可以监听当前应用前后台切换，并对此进行响应。
 这个类提供整个应用进程的生命周期。
 你可以将这个 LifecycleOwner 作为全体 Activity 的 LifecycleOwner，Lifecycle.Event.ON_CREATE 事件只会分发一次，而 Lifecycle.Event.ON_DESTROY 永远不被分发。其他事件的分发遵守以下规则：
@@ -499,8 +533,8 @@ public class MyApplication extends Application {
 
 原理：
 
-```java
 ProcessLifecycleOwnerInitializer
+```java
 public class ProcessLifecycleOwnerInitializer extends ContentProvider {
     @Override
     public boolean onCreate() {
@@ -517,7 +551,7 @@ public class ProcessLifecycleOwnerInitializer extends ContentProvider {
 这个AndroidManifest.xml最终会合并入我们app module 的AndroidManifest.xml文件中。
 这里利用了 ContentProvider 的隐式加载。它的 onCreate() 方法执行时机是在Application 的 onCreate()方法之前。这样它就能通过 Application 来监听 Activity 的创建。
 
-LifeDispatcher#init
+LifecycleDispatcher#init
 ```java
 class LifecycleDispatcher {
 
