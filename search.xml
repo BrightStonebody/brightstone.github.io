@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Android自定义注解]]></title>
+    <url>%2F2020%2F06%2F27%2FAndroid%2FAndroid%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%2F</url>
+    <content type="text"><![CDATA[因为要自定义一个页面导航工具，需要使用自定义注解 1. 创建Java Library创建两个新的module，创建时module一定要选择Java Library 两个module分别是: libnavannotation 注解 libnavcompile 注解处理器 2. 定义注解定义两个注解ActivityDestination, FragmentDestination 1234567@Target(AnnotationTarget.CLASS)@Retention(AnnotationRetention.BINARY)annotation class ActivityDestination( val pageUrl: String, val needLogin: Boolean = false, val asStarter: Boolean = false) 1234567@Target(AnnotationTarget.CLASS)@Retention(AnnotationRetention.BINARY)annotation class FragmentDestination( val pageUrl: String, val needLogin: Boolean = false, val asStarter: Boolean = false) 3. 定义注解处理器（关键）3.1 配置build.gradle123456789101112131415161718apply plugin: 'java-library'apply plugin: 'kotlin'apply plugin: 'kotlin-kapt'dependencies &#123; implementation fileTree(dir: 'libs', include: ['*.jar']) implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" implementation 'com.alibaba:fastjson:1.2.59' implementation project(':libnavannotation') implementation 'com.google.auto.service:auto-service:1.0-rc6'// annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6' kapt 'com.google.auto.service:auto-service:1.0-rc6'&#125;sourceCompatibility = "8"targetCompatibility = "8" 需要注意以下几点： 如果注解处理器是使用kotlin编写的，那么，一定要添加kotlin-kapt插件 implementation 导入annotation注解模块 导入auto-service注解处理器依赖，如果是纯Java代码，可以使用annotationProcessor &#39;com.google.auto.service:auto-service:1.0-rc6&#39;， 如果是kotlin代码，必须使用kapt &#39;com.google.auto.service:auto-service:1.0-rc6&#39;。 我这里还implementation了auto-service 3.2 编写注解处理器12345678910111213141516171819202122@AutoService(Processor::class)@SupportedSourceVersion(SourceVersion.RELEASE_8)@SupportedAnnotationTypes( "com.example.libnavannotation.ActivityDestination", "com.example.libnavannotation.FragmentDestination")class NavProcessor : AbstractProcessor() &#123; override fun init(processingEnv: ProcessingEnvironment) &#123; super.init(processingEnv) ... &#125; override fun process(annotations: Set&lt;TypeElement&gt;, roundEnv: RoundEnvironment): Boolean &#123; ... &#125;&#125; 注意注解处理器类上面的几个注解 3.3 创建processor configuration file这里取决于gradle的版本，高版本必须创建processor配置文件，否则不会执行注解处理器的代码 需要在注解处理器所在module的 main 底下新建一个package，名称为 resources 在 resources 底下新建文件 META-INF/services/javax.annotation.processing.Processor 在 javax.annotation.processing.Processor 下写入 注解处理器的全名称 eg: com.example.libnavcompiler.NavProcessor 4. 使用注解在Android工程module中配置build.gradle 1234567891011121314151617apply plugin: 'com.android.application'apply plugin: 'kotlin-android'apply plugin: 'kotlin-android-extensions'apply plugin: 'kotlin-kapt'...dependencies &#123; implementation fileTree(dir: 'libs', include: ['*.jar']) implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" ... implementation project(":libnavannotation")// annotationProcessor project(":libnavcompiler") kapt project(":libnavcompiler")&#125; 导入 注解module、注解处理器modulekotlin相关的注意事项和 注解处理器module 中的一样 123456@FragmentDestination(pageUrl = "main/tabs/home", asStarter = true)class HomeFragment : Fragment() &#123; ...&#125; 在build中点击make project，即可执行直接处理器中的代码。如果遇到不成功，可以rebuild再试一次 参考教你如何完全解析Kotlin中的注解 Android 开发之 自定义注解处理器]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>注解</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[gradle相关基础]]></title>
     <url>%2F2020%2F06%2F18%2FAndroid%2Fgradle%E7%9B%B8%E5%85%B3%E5%9F%BA%E7%A1%80%2F</url>
     <content type="text"><![CDATA[Gradle中的对象Gradle主要有三种对象这三种对象和三种不同的脚本文件对应，在gradle执行的时候，会将脚本转换成对应的对象： Gradle对象：当我们执行gradle xxx或者什么的时候，gradle会从默认的配置脚本中构造出一个Gradle对象。在整个执行过程中，只有这么一个对象。Gradle对象的数据类型就是Gradle。我们一般很少去定制这个默认的配置脚本。 Project对象：Gradle对每一个build.gradle会实例化成一个Project类，并且能够通过project变量使其隐式可用。 Settings对象：显然，每一个settings.gradle都会转换成一个Settings对象。 构建的生命周期，首先根据settings.gradle文件构建出一个Seetings对象，然后根据Seetings中的配置，创建Project对象，去找各个project下的build.gradle文件，根据文件内容来对project对象进行配置。 setting.gradle1include ':app', ':progect_1', ':progect_2' 用于指示 Gradle 在构建应用时应将哪些模块包括在内 gradle.properties里面可以定义一些常量供build.gradle使用，如版本号等.然后，我们就可以在build文件中进行引用了。引用方式，直接通过变量名就可以。 123COMPILE_SDK_VERSION = 23BUILD_TOOLS_VERSION = 23.0.1VERSION_CODE = 1 build.gradlebuild文件有两种，一个是针对当前的Module，一个是针对项目中所有的module在顶层的build文件中，我们可以来添加一些子module所共有的一些配置 下面是一些常用的build.gradle的配置说明123456789101112// 应用插件，module中的build.gradle很多配置都是插件提供的支持apply plugin: 'com.android.application'// 仓库， repositories &#123; google() jcenter()&#125;// 外部依赖，添加的依赖会在这些配置的仓库中去寻找dependencies &#123; // "group:name:version" implementation 'androidx.appcompat:appcompat:1.1.0'&#125; Task包括任务动作和任务依赖。任务动作定义了一个最小的工作单元。可以定义依赖于其它任务、动作序列和执行条件。 depandsOn: 依赖于其它任务 doFirst, doLast(&lt;&lt;): Task是一个动作列表，doFirst表示在动作列表最前面添加一个动作，doLast在动作列表最后面添加一个动作 apply的插件自带和很多Task，在Gradle页面的 &lt;项目名&gt;/Tasks/build 目录里面可以看到。我们也可以自己编写任务，自己的Task在Gradle页面的 &lt;项目名&gt;/Tasks/other/ 目录里可以查找到 Gradle的工作流程 Initialization: 初始化，在多模块的项目中，就是执行settings.gradle Configuration: Configration阶段的目标是解析每个project中的build.gradle。比如multi-project build例子中，解析每个子目录中的build.gradle。 Configuration阶段完了后，整个build的project以及内部的Task关系就确定了。一个Project包含很多Task，每个Task之间有依赖关系。Configuration会建立一个有向图来描述Task之间的依赖关系。 Execution: 执行Task。 只有doFirst和doLast中的内容属于执行阶段 简言之，Gradle有一个初始化流程，这个时候settings.gradle会执行。在配置阶段，每个Project都会被解析，其内部的任务也会被添加到一个有向图里，用于解决执行过程中的依赖关系。然后才是执行阶段。你在gradle xxx中指定什么任务，gradle就会将这个xxx任务链上的所有任务全部按依赖顺序执行一遍！ 在每一步的步骤中间可以添加hook 12345678910111213141516171819202122232425262728293031323334353637383940task a &#123; println 'this is a' doFirst &#123; println 'this is a do first' &#125; doLast &#123; println "this is a do last" &#125;&#125;task testBoth &#123; // 配置阶段 // 依赖 a task 先执行 dependsOn("a") println 'this is b' doFirst &#123; // 执行阶段 println 'this is b first' &#125; doLast &#123; // 执行阶段 println 'this is b last' &#125;&#125;/**输出：&gt; Configure project :this is athis is b&gt; Task :athis is a do firstthis is a do last&gt; Task :testBoththis is b firstthis is b last*/ 解决依赖版本冲突大部分情况下，不需要我们去解决版本冲突。当出现版本冲突时，Gradle会帮我们自动依赖最高版本的包。 以下是我们自己解决版本冲突的一般步骤 查看依赖报告运行Gradle， &lt;项目名称&gt;/app/Tasks/dependencies/ 查看依赖报告，输出如下 xxxx -&gt; xxxx 表示依赖包自动提升到了最高版本 123456789+--- androidx.lifecycle:lifecycle-extensions:2.1.0| +--- androidx.lifecycle:lifecycle-runtime:2.1.0| | +--- androidx.lifecycle:lifecycle-common:2.1.0 -&gt; 2.3.0-alpha01| | | \--- androidx.annotation:annotation:1.1.0| | +--- androidx.arch.core:core-common:2.1.0| | | \--- androidx.annotation:annotation:1.1.0| | \--- androidx.annotation:annotation:1.1.0| +--- androidx.arch.core:core-common:2.1.0 (*)| +--- androidx.arch.core:core-runtime:2.1.0 排除传递性冲突123compile ('cn.qqtheme.framework:WheelPicker:1.5.1')&#123; exclude group:'com.android.support', module:"appcompat"&#125; 强制一个版本12345configurations.all&#123; resolutionStrategy&#123; force 'androidx.appcompat:appcompat:1.1.0' &#125;&#125;]]></content>
@@ -19,8 +30,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>Fresco</tag>
         <tag>源码解析</tag>
+        <tag>Fresco</tag>
       </tags>
   </entry>
   <entry>
@@ -81,8 +92,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>glide</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -93,8 +104,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>glide</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -400,18 +411,6 @@
       </categories>
       <tags>
         <tag>Activity</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[Android-Studio解决依赖冲突]]></title>
-    <url>%2F2019%2F04%2F14%2FAndroid%2FAndroid-Studio%E8%A7%A3%E5%86%B3%E4%BE%9D%E8%B5%96%E5%86%B2%E7%AA%81%2F</url>
-    <content type="text"><![CDATA[Android-Studio解决依赖冲突我们做android项目通常会引入很多第三方库， 有时候不同的第三方库会出现依赖冲突，导致添加依赖后就android-studio就报错。做项目是要添加glide库，直接添加最新版本 4.8，《第一行代码》中介绍使用的版本是3.7。 结果就是4.8的版本一添加依赖就报错，在build.gradle文件中报错buildtool版本冲突。我在网上找到了如下的文章，解决方法是一样的，做一个笔记。需要说明的 glide4.+ 的版本和 3.+ 的版本，提供的api接口的操作形式发生了变化，而且google上搜到说版本升级之后其实性能没有多大提升 原文：https://blog.csdn.net/victor888886/article/details/73714141 以下是网上的文章内容：最近刚接手一个项目，里面模块有三四个，引入的第三方包更多了。但是问题来了，新配置的studio一运行就报了错。 Error:Execution failed for task &apos;:app:processDebugManifest&apos;. Manifest merger failed : Attribute meta-data#android.support.VERSION@value value=(25.3.1) from [com.android.support:design:25.3.1] AndroidManifest.xml:27:9-31is also present at [com.android.support:support-v4:26.0.0-alpha1] AndroidManifest.xml:27:9-38 value=(26.0.0-alpha1).Suggestion: add ‘tools:replace=”android:value”’ to element at AndroidManifest.xml:25:5-27:34 to override. 可以看到，studio已经明确的指出了错误，在清单文件中Android support 库版本冲突了，而且，studio还很“人性”地给出了suggestion：清单文件25行——27行添加： tools:replace=&quot;android:value&quot; 坑就坑在这里，给出的建议完全误导人了。咳咳，下面看我详（如）细（何）解（装）释（逼）： 问题分析：看到com.android.support:design:25.3.1 和 com.android.support:support-v4:26.0.0-alpha1， 说明这个Android support库版本冲突了，解决的思想很简单，就是统一使用同一个版本的support库，比如修改掉26.0.0-alpha1的依赖，统一换成25.3.1的版本。 解决既然有了思路，那就动手试一试，全局搜索26.0.0-alpha1，统一替换为 25.3.1 正常情况下，这个是能解决问题的，但只能解决gradle里面自己引入的依赖版本问题。然而，今天碰到的坑还没完呢，同步代码以后，还是原来的错误信息！ 再次分析：问题就出在第三方库的依赖了，好多第三方库默认引用当前最新的support库，现在最新的就是26.0.0-alpha1这个版本。所以，要解决问题，就要从引入的三方库里面入手了！那么问题来了，挖掘机哪家......哦不，怎么知道哪个依赖包有冲突？下面出杀手锏了： 打开Android studio下面的terminal，输入命令：`gradle -q app:dependencies`,惊喜出现了：没有配置gradle环境变量的同学赶快去配一个吧！.. **（这里不需要配置gradle环境变量也可以，在terminal中输入命令：./gradlew -q app:dependencies效果是一样的）** 配过之后可以看到类似一下的输出： +— project :base-util| +— com.android.support:recyclerview-v7:25.3.1 ()| +— cn.qqtheme.framework:WheelPicker:1.5.1| | +— cn.qqtheme.framework:Common:1.5.1| | | +— com.android.support:support-v4:latest.release -&gt; 26.0.0-alpha1 ()| | | — com.android.support:support-annotations:latest.release -&gt; 26.0.0-alpha1| | +— com.android.support:support-v4:latest.release -&gt; 26.0.0-alpha1 ()| | — com.android.support:support-annotations:latest.release -&gt; 26.0.0-alpha1| +— com.github.CymChad:BaseRecyclerViewAdapterHelper:v1.9.8| +— io.reactivex:rxjava:1.1.8| +— io.reactivex:rxandroid:1.1.0| | — io.reactivex:rxjava:1.1.0 -&gt; 1.1.8| +— com.squareup.okhttp3:okhttp:3.2.0 -&gt; 3.4.1| | — com.squareup.okio:okio:1.9.0| +— com.squareup.retrofit2:retrofit:2.0.2| | — com.squareup.okhttp3:okhttp:3.2.0 -&gt; 3.4.1 ()| +— com.squareup.retrofit2:adapter-rxjava:2.0.2| | +— com.squareup.retrofit2:retrofit:2.0.2 ()| | — io.reactivex:rxjava:1.1.1 -&gt; 1.1.8| +— com.squareup.retrofit2:converter-gson:2.0.2| | +— com.squareup.retrofit2:retrofit:2.0.2 ()| | — com.google.code.gson:gson:2.6.1| +— com.squareup.okhttp3:logging-interceptor:3.4.1| | — com.squareup.okhttp3:okhttp:3.4.1 ()| +— com.github.zhaokaiqiang.klog:library:1.5.0| | — com.android.support:support-annotations:23.4.0 -&gt; 26.0.0-alpha1| +— com.squareup.retrofit2:converter-simplexml:2.0.2| | +— com.squareup.retrofit2:retrofit:2.0.2 ()| | — org.simpleframework:simple-xml:2.7.1| +— com.github.bumptech.glide:glide:3.7.0| +— project :base-res (*)| — com.jakewharton:butterknife:7.0.1 很明显cn.qqtheme.framework:WheelPicker这个包默认引用了最新的support库！ 最终解决：找到依赖的库，修改为下面的方式引入： compile (&apos;cn.qqtheme.framework:WheelPicker:1.5.1&apos;){ exclude group:&apos;com.android.support&apos; }]]></content>
-      <categories>
-        <category>Android</category>
-        <category>AndroidStudio</category>
-      </categories>
-      <tags>
-        <tag>AndroidStudio</tag>
       </tags>
   </entry>
   <entry>
