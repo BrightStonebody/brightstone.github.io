@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[kotlin协程]]></title>
+    <url>%2F2020%2F07%2F15%2FAndroid%2Fkotlin%E5%8D%8F%E7%A8%8B%2F</url>
+    <content type="text"><![CDATA[Async首先看一个例子，先后调用两个挂起函数 12345678910111213141516171819202122232425262728import kotlinx.coroutines.*import kotlin.system.*fun main() = runBlocking&lt;Unit&gt; &#123; val time = measureTimeMillis &#123; val one = doSomethingUsefulOne() val two = doSomethingUsefulTwo() println("The answer is $&#123;one + two&#125;") &#125; println("Completed in $time ms") &#125;suspend fun doSomethingUsefulOne(): Int &#123; delay(1000L) // 假设我们在这里做了些有用的事 return 13&#125;suspend fun doSomethingUsefulTwo(): Int &#123; delay(1000L) // 假设我们在这里也做了一些有用的事 return 29&#125;/** 输出The answer is 42Completed in 2017 ms**/ 可以发现，两个挂起函数是同步执行的，有先后顺序 使用async 1234567891011121314151617181920212223242526import kotlinx.coroutines.*import kotlin.system.*fun main() = runBlocking&lt;Unit&gt; &#123; val time = measureTimeMillis &#123; val one = async &#123; doSomethingUsefulOne() &#125; val two = async &#123; doSomethingUsefulTwo() &#125; println("The answer is $&#123;one.await() + two.await()&#125;") &#125; println("Completed in $time ms") &#125;suspend fun doSomethingUsefulOne(): Int &#123; delay(1000L) // 假设我们在这里做了些有用的事 return 13&#125;suspend fun doSomethingUsefulTwo(): Int &#123; delay(1000L) // 假设我们在这里也做了些有用的事 return 29&#125;/** 输出The answer is 42Completed in 1024 ms**/ 在结果耗时上，两个挂起方法达到了异步的效果。这得益于async关键字在概念上，async 就类似于 launch。它启动了一个单独的协程，这是一个轻量级的线程并与其它所有的协程一起并发的工作。不同之处在于 launch 返回一个 Job 并且不附带任何结果值，而 async 返回一个 Deferred —— 一个轻量级的非阻塞 future， 这代表了一个将会在稍后提供结果的 promise。你可以使用 .await() 在一个延期的值上得到它的最终结果， 但是 Deferred 也是一个 Job，所以如果需要的话，你可以取消它。 调度器与线程12345678910111213141516171819202122232425import kotlinx.coroutines.*fun main() = runBlocking&lt;Unit&gt; &#123; launch &#123; // 运行在父协程的上下文中，即 runBlocking 主协程 println("main runBlocking : I'm working in thread $&#123;Thread.currentThread().name&#125;") &#125; launch(Dispatchers.Unconfined) &#123; // 不受限的——将工作在主线程中 println("Unconfined : I'm working in thread $&#123;Thread.currentThread().name&#125;") &#125; launch(Dispatchers.Default) &#123; // 将会获取默认调度器 println("Default : I'm working in thread $&#123;Thread.currentThread().name&#125;") &#125; launch(newSingleThreadContext("MyOwnThread")) &#123; // 将使它获得一个新的线程 println("newSingleThreadContext: I'm working in thread $&#123;Thread.currentThread().name&#125;") &#125; &#125;/** 输出 注意先后顺序Unconfined : I'm working in thread main @coroutine#3Default : I'm working in thread DefaultDispatcher-worker-1 @coroutine#4main runBlocking : I'm working in thread main @coroutine#2newSingleThreadContext: I'm working in thread MyOwnThread @coroutine#5**/ launch { …… } : 当调用 launch { …… } 时不传参数，它从启动了它的 CoroutineScope 中承袭了上下文（以及调度器）。在这个案例中，它从 main 线程中的 runBlocking 主协程承袭了上下文。 launch(Dispatchers.Default) { …… } : 当协程在 GlobalScope 中启动时，使用的是由Dispatchers.Default代表的默认调度器。 默认调度器使用共享的后台线程池。 所以launch(Dispatchers.Default) { …… }与GlobalScope.launch { …… }使用相同的调度器。 launch(newSingleThreadContext(&quot;...&quot;)) { ... } : newSingleThreadContext 为协程的运行启动了一个线程。 一个专用的线程是一种非常昂贵的资源。 在真实的应用程序中两者都必须被释放，当不再需要的时候，使用 close 函数，或存储在一个顶层变量中使它在整个应用程序中被重用。??? launch(Dispatchers.Unconfined) { ... } : 完全没搞懂这玩意儿.. 在Android中使用协程作用域1234567891011121314151617181920212223242526272829import kotlinx.coroutines.*class Activity &#123; private val mainScope = MainScope() fun destroy() &#123; mainScope.cancel() &#125; fun doSomething() &#123; // 在示例中启动了 10 个协程，且每个都工作了不同的时长 repeat(10) &#123; i -&gt; mainScope.launch &#123; delay((i + 1) * 200L) // 延迟 200 毫秒、400 毫秒、600 毫秒等等不同的时间 println("Coroutine $i is done") &#125; &#125; &#125;&#125; // Activity 类结束fun main() = runBlocking&lt;Unit&gt; &#123; val activity = Activity() activity.doSomething() // 运行测试函数 println("Launched coroutines") delay(500L) // 延迟半秒钟 println("Destroying activity!") activity.destroy() // 取消所有的协程 delay(1000) // 为了在视觉上确认它们没有工作 &#125; 通过创建一个 CoroutineScope 实例来管理协程的生命周期，并使它与 activity 的生命周期相关联。CoroutineScope 可以通过 CoroutineScope() 创建或者通过MainScope() 工厂函数。前者创建了一个通用作用域，而后者为使用 Dispatchers.Main 作为默认调度器的 UI 应用程序 创建作用域. 在上面的程序中, 当Actiivty被destroy()时, 会 cancel() 协程作用域, 从而终止所有的协程 异步流12345678910111213141516171819202122232425262728293031import kotlinx.coroutines.*import kotlinx.coroutines.flow.*fun foo(): Flow&lt;Int&gt; = flow &#123; // 流构建器 for (i in 1..3) &#123; delay(100) // 假装我们在这里做了一些有用的事情 emit(i) // 发送下一个值 &#125;&#125;fun main() = runBlocking&lt;Unit&gt; &#123; // 启动并发的协程以验证主线程并未阻塞 launch &#123; for (k in 1..3) &#123; println("I'm not blocked $k") delay(100) &#125; &#125; // 收集这个流 foo().collect &#123; value -&gt; println(value) &#125; &#125;/** 输出I'm not blocked 11I'm not blocked 22I'm not blocked 33**/ 上方的程序: 名为 flow 的 Flow 类型构建器函数。 flow { … } 构建块中的代码可以挂起。 函数 foo() 不再标有 suspend 修饰符。 流使用 emit 函数 发射 值。 流使用 collect 函数 收集 值。 kotlin支持对flow进行各种操作, 比如: flat, reduce, zip等等, 类似RxJava的各种运算 suspendCancellableCoroutine12345678910111213141516171819202122232425private suspend fun loadPageSuspend(productCategoryType: Int, page: Int): ProductListLoadResultBean = suspendCancellableCoroutine &#123; cnt -&gt; ProductManagementAPI.requestProductList( category = productCategoryType, page = page, keyword = getKeyword(), orderBy = getOrderType(), desc = isOrderDesc(), listener = object : INetRequestListener&lt;ProductListLoadResultBean&gt; &#123; override fun onSuccess(result: DataHull&lt;ProductListLoadResultBean&gt;?) &#123; result?.let &#123; cnt.resumeWith(Result.success(it.data)) &#125; ?: kotlin.run &#123; cnt.resumeWithException(Exception()) &#125; &#125; override fun onError(error: DataHull&lt;ProductListLoadResultBean&gt;?, isNetError: Boolean) &#123; cnt.resumeWithException(Exception(error?.stateBean?.message)) &#125; &#125; ) &#125;]]></content>
+      <categories>
+        <category>Kotlin</category>
+      </categories>
+      <tags>
+        <tag>Kotlin</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Android自定义注解]]></title>
     <url>%2F2020%2F06%2F27%2FAndroid%2FAndroid%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3%2F</url>
     <content type="text"><![CDATA[因为要自定义一个页面导航工具，需要使用自定义注解 1. 创建Java Library创建两个新的module，创建时module一定要选择Java Library 两个module分别是: libnavannotation 注解 libnavcompile 注解处理器 2. 定义注解定义两个注解ActivityDestination, FragmentDestination 1234567@Target(AnnotationTarget.CLASS)@Retention(AnnotationRetention.BINARY)annotation class ActivityDestination( val pageUrl: String, val needLogin: Boolean = false, val asStarter: Boolean = false) 1234567@Target(AnnotationTarget.CLASS)@Retention(AnnotationRetention.BINARY)annotation class FragmentDestination( val pageUrl: String, val needLogin: Boolean = false, val asStarter: Boolean = false) 3. 定义注解处理器（关键）3.1 配置build.gradle123456789101112131415161718apply plugin: 'java-library'apply plugin: 'kotlin'apply plugin: 'kotlin-kapt'dependencies &#123; implementation fileTree(dir: 'libs', include: ['*.jar']) implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" implementation 'com.alibaba:fastjson:1.2.59' implementation project(':libnavannotation') implementation 'com.google.auto.service:auto-service:1.0-rc6'// annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6' kapt 'com.google.auto.service:auto-service:1.0-rc6'&#125;sourceCompatibility = "8"targetCompatibility = "8" 需要注意以下几点： 如果注解处理器是使用kotlin编写的，那么，一定要添加kotlin-kapt插件 implementation 导入annotation注解模块 导入auto-service注解处理器依赖，如果是纯Java代码，可以使用annotationProcessor &#39;com.google.auto.service:auto-service:1.0-rc6&#39;， 如果是kotlin代码，必须使用kapt &#39;com.google.auto.service:auto-service:1.0-rc6&#39;。 我这里还implementation了auto-service 3.2 编写注解处理器12345678910111213141516171819202122@AutoService(Processor::class)@SupportedSourceVersion(SourceVersion.RELEASE_8)@SupportedAnnotationTypes( "com.example.libnavannotation.ActivityDestination", "com.example.libnavannotation.FragmentDestination")class NavProcessor : AbstractProcessor() &#123; override fun init(processingEnv: ProcessingEnvironment) &#123; super.init(processingEnv) ... &#125; override fun process(annotations: Set&lt;TypeElement&gt;, roundEnv: RoundEnvironment): Boolean &#123; ... &#125;&#125; 注意注解处理器类上面的几个注解 3.3 创建processor configuration file这里取决于gradle的版本，高版本必须创建processor配置文件，否则不会执行注解处理器的代码 需要在注解处理器所在module的 main 底下新建一个package，名称为 resources 在 resources 底下新建文件 META-INF/services/javax.annotation.processing.Processor 在 javax.annotation.processing.Processor 下写入 注解处理器的全名称 eg: com.example.libnavcompiler.NavProcessor 4. 使用注解在Android工程module中配置build.gradle 1234567891011121314151617apply plugin: 'com.android.application'apply plugin: 'kotlin-android'apply plugin: 'kotlin-android-extensions'apply plugin: 'kotlin-kapt'...dependencies &#123; implementation fileTree(dir: 'libs', include: ['*.jar']) implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version" ... implementation project(":libnavannotation")// annotationProcessor project(":libnavcompiler") kapt project(":libnavcompiler")&#125; 导入 注解module、注解处理器modulekotlin相关的注意事项和 注解处理器module 中的一样 123456@FragmentDestination(pageUrl = "main/tabs/home", asStarter = true)class HomeFragment : Fragment() &#123; ...&#125; 在build中点击make project，即可执行直接处理器中的代码。如果遇到不成功，可以rebuild再试一次 参考教你如何完全解析Kotlin中的注解 Android 开发之 自定义注解处理器]]></content>
@@ -92,8 +103,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -104,8 +115,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -116,8 +127,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -128,8 +139,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -140,8 +151,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -152,8 +163,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -213,8 +224,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -226,9 +237,9 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
         <tag>RecyclerView</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -250,8 +261,8 @@
         <category>View</category>
       </categories>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
@@ -272,8 +283,8 @@
     <url>%2F2019%2F08%2F13%2FAndroid%2FLayoutInflater%E8%A7%A3%E6%9E%90%2F</url>
     <content type="text"><![CDATA[LayoutInflater解析源码1View result = root; 12345678910111213// Temp is the root view that was found in the xmlfinal View temp = createViewFromTag(root, name, inflaterContext, attrs);ViewGroup.LayoutParams params = null;if (root != null) &#123; // Create layout params that match root, if supplied params = root.generateLayoutParams(attrs); if (!attachToRoot) &#123; // Set the layout params for temp if we are not // attaching. (If we are, we use addView, below) temp.setLayoutParams(params); &#125;&#125; 123456789101112131415// Inflate all children under temp against its context.rInflateChildren(parser, temp, attrs, true);// We are supposed to attach all the views we found (int temp)// to root. Do that now.if (root != null &amp;&amp; attachToRoot) &#123; root.addView(temp, params);&#125;// Decide whether to return the root that was passed in or the// top view found in xml.if (root == null || !attachToRoot) &#123; result = temp;&#125; 1return result; 使用方法1LayoutInflater.from(context).inflate(int resource, ViewGroup root, boolean attachToRoot) ; 第一个参数是layout资源文件id 第二个参数是父布局。 当第二个参数为null时，将不会为inflate出来的view添加layoutParam 第三个参数是是否加入到父布局中。若为空，则，调用root.addView直接加入到父布局中 需要注意的是，当root!=null，且attachToRoot为true时，Inflater返回的父布局的view，而不是解析出的view]]></content>
       <tags>
-        <tag>Android</tag>
         <tag>View</tag>
+        <tag>Android</tag>
       </tags>
   </entry>
   <entry>
