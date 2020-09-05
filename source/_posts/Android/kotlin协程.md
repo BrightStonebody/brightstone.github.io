@@ -112,7 +112,10 @@ newSingleThreadContext: I'm working in thread MyOwnThread @coroutine#5
 * `launch { …… }` :
     * 当调用 launch { …… } 时不传参数，它从启动了它的 CoroutineScope 中承袭了上下文（以及调度器）。在这个案例中，它从 main 线程中的 runBlocking 主协程承袭了上下文。
 * `launch(Dispatchers.Default) { …… }` :
-    * 当协程在 GlobalScope 中启动时，使用的是由` Dispatchers.Default `代表的默认调度器。 默认调度器使用共享的后台线程池。 所以` launch(Dispatchers.Default) { …… } `与` GlobalScope.launch { …… } `使用相同的调度器。
+    * 当协程在 GlobalScope 中启动时，使用的是由` Dispatchers.Default `代表的默认调度器。 默认调度器使用共享的后台线程池。 所以` launch(Dispatchers.Default) { …… } `与` GlobalScope.launch { …… } `使用相同的调度器。 
+    `Dispatchers.Default `适合CPU密集型的任务，比如解析JSON文件，排序一个较大的list
+* `launch(Dispatchers.IO) { …… }` :
+    * 针对磁盘和网络IO进行了优化，适合IO密集型的任务，比如：读写文件，操作数据库以及网络请求 
 * `launch(newSingleThreadContext("...")) { ... }` :
     * `newSingleThreadContext` 为协程的运行启动了一个线程。 一个专用的线程是一种非常昂贵的资源。 在真实的应用程序中两者都必须被释放，当不再需要的时候，使用 `close` 函数，或存储在一个顶层变量中使它在整个应用程序中被重用。???
 * `launch(Dispatchers.Unconfined) { ... }` :
