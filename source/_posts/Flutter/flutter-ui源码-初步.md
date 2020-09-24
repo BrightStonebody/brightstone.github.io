@@ -2,6 +2,7 @@
 title: flutter ui源码 初步
 date: 2020-08-14 20:30:42
 tags:
+- Flutter
 ---
 
 ## Widget, Element, RanderObject 三者之间的关系
@@ -246,6 +247,35 @@ RenderObjectElement有三个常用的子类：
 
 RenderObjectElement的mount、update、unmount逻辑与ComponentElement大致相同，只不过加上了RenderObject的相关逻辑。
 
+**mmount、update、unmount**
+
+```dart
+  @override
+  void mount(Element parent, dynamic newSlot) {
+    super.mount(parent, newSlot);
+    _renderObject = widget.createRenderObject(this);
+    attachRenderObject(newSlot);
+    _dirty = false;
+  }
+
+  @override
+  void attachRenderObject(dynamic newSlot) {
+    _slot = newSlot;
+    _ancestorRenderObjectElement = _findAncestorRenderObjectElement();
+    _ancestorRenderObjectElement?.insertChildRenderObject(renderObject, newSlot);
+    final ParentDataElement<RenderObjectWidget> parentDataElement = _findAncestorParentDataElement();
+    if (parentDataElement != null)
+      _updateParentData(parentDataElement.widget);
+  }
+
+  @override
+  void update(covariant RenderObjectWidget newWidget) {
+    super.update(newWidget);
+    widget.updateRenderObject(this, renderObject);
+    _dirty = false;
+  }
+```
+
 ### RenderObject的更新
 
 我们从render树的insert过程类分析RenderObject的更新
@@ -300,7 +330,7 @@ RenderObjectElement的mount、update、unmount逻辑与ComponentElement大致相
   }
 ```
 
-markNeedsLayout中判断如果不是_relayoutBoundary，对该节点标脏的同时会对parent进行向上标脏；否则，只对本节点标脏，触发`owner._nodesNeedingLayout.add( this )`与`owner.requestVisualUpdate()` 其中owner._nodesNeedingLayout.add( this )将当前RenderObject注册进PipelineOwner的待刷新列表中，然后触发“VisualUpdate”。这里的owner是PipelineOwner
+和element的build流程不同，RenderObject的标脏会向上标脏，直到找到一个 relayoutBoundary 位置。找到 _relayoutBoundary 节点，触发`owner._nodesNeedingLayout.add( this )`与`owner.requestVisualUpdate()` 其中owner._nodesNeedingLayout.add( this )将当前RenderObject注册进PipelineOwner的待刷新列表中，然后触发“VisualUpdate”。这里的owner是PipelineOwner
 
 PiplelineOwner.requestVisualUpdate会请求engine进行一次刷新。。
 (todo 不是标脏吗？ 难道不是等待vsync信号对标脏的node进行重绘？？？)
@@ -344,7 +374,7 @@ onNeedVisualUpdate是在PiplelineOwner实例化的时候赋值的，在RendererB
 ensureVisualUpdate 会调用window.scheduleFrame()请求native层绘制新帧。。。没太搞懂为什么要主动请求绘制
 
 
-### layout、paint流程
+### layout
 
 **RendererBinding.drawFrame**
 
@@ -395,10 +425,129 @@ ensureVisualUpdate 会调用window.scheduleFrame()请求native层绘制新帧。
 
 这里调用performLayout()进行layout，并标记需要paint
 
-**flushPaint()的逻辑和flushLayout基本一致**
+### paint
 
+之前说到过，layout过程中会对paint进行标脏
 
+**markNeedsPaint()**
+```dart
+  void markNeedsPaint() {
+    if (_needsPaint)
+      return;
+    _needsPaint = true;
+    if (isRepaintBoundary) {
+      if (owner != null) {
+        owner._nodesNeedingPaint.add(this);
+        owner.requestVisualUpdate();
+      }
+    } else if (parent is RenderObject) {
+      final RenderObject parent = this.parent;
+      parent.markNeedsPaint();
+    } else {
+      // If we're the root of the render tree (probably a RenderView),
+      // then we have to paint ourselves, since nobody else can paint
+      // us. We don't add ourselves to _nodesNeedingPaint in this
+      // case, because the root is always told to paint regardless.
+      if (owner != null)
+        owner.requestVisualUpdate();
+    }
+  }
+```
 
+和layout的标脏过程类似，一直向上标脏，直到 isRepaintBoundary 为true。需要说明的是，我们可以 RepaintBoundary 是一个widget，我们可以手动添加，来终止paint的向上标脏过程，来达到局部重绘，提升性能。 layoutBoundary 则是framework层帮我们判断的，我们不需要手动处理。
 
+**pipelineOwner.flushLayout()**
 
+```dart
+  void flushPaint() {
+    try {
+      final List<RenderObject> dirtyNodes = _nodesNeedingPaint;
+      _nodesNeedingPaint = <RenderObject>[];
+      // Sort the dirty nodes in reverse order (deepest first).
+      for (RenderObject node in dirtyNodes..sort((RenderObject a, RenderObject b) => b.depth - a.depth)) {
+        if (node._needsPaint && node.owner == this) {
+          if (node._layer.attached) {
+            PaintingContext.repaintCompositedChild(node);
+          } else {
+            node._skippedPaintingOnLayer();
+          }
+        }
+      }
+    } finally {
+      ...
+    }
+  }
+```
+
+与layout不同的是这里的 sort 规则是相反的，最深的节点先重绘。并且，多了判断 `node._layer.attached`, 如果为true，重绘，并且重绘逻辑交给了PaintContext；如果为false，则执行 `node._skippedPaintingOnLayer();`
+
+**node._skippedPaintingOnLayer()**
+
+```dart
+  void _skippedPaintingOnLayer() {
+    AbstractNode ancestor = parent;
+    while (ancestor is RenderObject) {
+      final RenderObject node = ancestor;
+      if (node.isRepaintBoundary) {
+        if (node._layer == null)
+          break; // looks like the subtree here has never been painted. let it handle itself.
+        if (node._layer.attached)
+          break; // it's the one that detached us, so it's the one that will decide to repaint us.
+        node._needsPaint = true;
+      }
+      ancestor = node.parent;
+    }
+  }
+```
+
+我的理解是，该节点的 layer 被 detached 了，需要对该节点及其父节点行重新标脏，保证该节点的 layer 被重新 attach 之后能够重绘。 
+
+**PaintingContext.repaintCompositedChild(node);**
+
+```dart
+  static void repaintCompositedChild(RenderObject child, { bool debugAlsoPaintedParent = false }) {
+    _repaintCompositedChild(
+      child,
+      debugAlsoPaintedParent: debugAlsoPaintedParent,
+    );
+  }
+
+  static void _repaintCompositedChild(
+    RenderObject child, {
+    bool debugAlsoPaintedParent = false,
+    PaintingContext childContext,
+  }) {
+    OffsetLayer childLayer = child._layer;
+    if (childLayer == null) {
+      child._layer = childLayer = OffsetLayer();
+    } else {
+      childLayer.removeAllChildren();
+    }
+    childContext ??= PaintingContext(child._layer, child.paintBounds);
+    child._paintWithContext(childContext, Offset.zero);
+
+    childContext.stopRecordingIfNeeded();
+  }
+```
+
+又是 PaintContext 和 layer。。。先跳过这两个，最终重绘的逻辑在 `child._paintWithContext(childContext, Offset.zero);`中
+
+**child._paintWithContext(childContext, Offset.zero);**
+
+```dart
+  void _paintWithContext(PaintingContext context, Offset offset) {
+    // 一堆注释解释了为啥在paint的时候 _needsLayout 还可能为true 。。。
+    // 英文注释没咋看懂
+    if (_needsLayout)
+      return;
+    RenderObject debugLastActivePaint;
+    _needsPaint = false;
+    try {
+      // 最终的重绘交给具体的 RenderObject 子类
+      paint(context, offset);
+    } catch (e, stack) {
+      _debugReportException('paint', e, stack);
+    }
+  }
+```
 
