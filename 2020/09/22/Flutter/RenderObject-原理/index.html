@@ -58,7 +58,7 @@
 <meta property="og:site_name" content="BrightStone">
 <meta property="og:description" content="ParentData 和各种 Mixin123456789101112131415161718192021222324252627282930@startumlBoxParentData --|&amp;gt; ParentDataContainerParentDataMixin --|&amp;gt; ParentDataContainerBoxParentData --|&amp;gt; BoxParentDataC">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-09-23T12:15:21.969Z">
+<meta property="og:updated_time" content="2020-09-26T07:54:22.511Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RenderObject 原理">
 <meta name="twitter:description" content="ParentData 和各种 Mixin123456789101112131415161718192021222324252627282930@startumlBoxParentData --|&amp;gt; ParentDataContainerParentDataMixin --|&amp;gt; ParentDataContainerBoxParentData --|&amp;gt; BoxParentDataC">
@@ -239,7 +239,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-23 20:15:21" itemprop="dateModified" datetime="2020-09-23T20:15:21+08:00">2020-09-23</time>
+                <time title="修改时间：2020-09-26 15:54:22" itemprop="dateModified" datetime="2020-09-26T15:54:22+08:00">2020-09-26</time>
               </span>
 
           
@@ -288,7 +288,7 @@
 <p><strong>paintContext.paintChild()</strong></p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> paintChild(RenderObject child, Offset offset) &#123;</span><br><span class="line">  <span class="keyword">if</span> (child.isRepaintBoundary) &#123;</span><br><span class="line">    stopRecordingIfNeeded();</span><br><span class="line">    _compositeChild(child, offset);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    child._paintWithContext(<span class="keyword">this</span>, offset);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> _compositeChild(RenderObject child, Offset offset) &#123;</span><br><span class="line">  <span class="comment">// Create a layer for our child, and paint the child into it.</span></span><br><span class="line">  <span class="keyword">if</span> (child._needsPaint) &#123;</span><br><span class="line">    <span class="comment">// 这个方法兜兜转转又会调用 child._paintWithContext 方法</span></span><br><span class="line">    repaintCompositedChild(child, debugAlsoPaintedParent: <span class="keyword">true</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">final</span> OffsetLayer childOffsetLayer = child._layer;</span><br><span class="line">  childOffsetLayer.offset = offset;</span><br><span class="line">  appendLayer(child._layer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@protected</span></span><br><span class="line"><span class="keyword">void</span> appendLayer(Layer layer) &#123;</span><br><span class="line">  layer.remove();</span><br><span class="line">  _containerLayer.append(layer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在 paintChild 方法中，若 child 是一个 repaintBoundary ，会为 child 创建一个 layer。。所以这个layer又是怎样？？？<br>这样可以达成的效果是，flutter引擎在刷新重绘时，可以进行局部刷新。</p>
-<p>在drawFrame()中，paint 标脏节点时会直接执行 repaintCompositeChild </p>
+<p>在drawFrame()中，paint 标脏节点刷新时会直接执行 PaintContext.repaintCompositeChild()</p>
 <p><strong>paint()</strong></p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> paint(PaintingContext context, Offset offset) &#123; &#125;</span><br></pre></td></tr></table></figure>
 <p>RenderObject 中的 paint 是一个空方法，交给子类来实现。 以 RenderFlex 为例： </p>
