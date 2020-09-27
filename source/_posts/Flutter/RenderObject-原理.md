@@ -161,17 +161,32 @@ Flutter 中真正实现布局和绘制的类
     }
   }
 
-
   void _compositeChild(RenderObject child, Offset offset) {
     // Create a layer for our child, and paint the child into it.
     if (child._needsPaint) {
-      // 这个方法兜兜转转又会调用 child._paintWithContext 方法
+      // 这个方法会创建layer，然后再调用 child._paintWithContext 方法
       repaintCompositedChild(child, debugAlsoPaintedParent: true);
     } else {
     }
     final OffsetLayer childOffsetLayer = child._layer;
     childOffsetLayer.offset = offset;
     appendLayer(child._layer);
+  }
+
+  static void _repaintCompositedChild(
+    RenderObject child, {
+    bool debugAlsoPaintedParent = false,
+    PaintingContext childContext,
+  }) {
+    OffsetLayer childLayer = child._layer;
+    if (childLayer == null) {
+      child._layer = childLayer = OffsetLayer();
+    } else {
+      childLayer.removeAllChildren();
+    }
+    childContext ??= PaintingContext(child._layer, child.paintBounds);
+    child._paintWithContext(childContext, Offset.zero);
+    childContext.stopRecordingIfNeeded();
   }
 
   @protected
@@ -181,15 +196,28 @@ Flutter 中真正实现布局和绘制的类
   }
 ```
 
-在 paintChild 方法中，若 child 是一个 repaintBoundary ，会为 child 创建一个 layer。。所以这个layer又是怎样？？？ 
-这样可以达成的效果是，flutter引擎在刷新重绘时，可以进行局部刷新。
+在 paintChild 方法中，若 child 是一个 repaintBoundary ，会为 child 创建一个 layer ，然后再调用 child._paintWithContext(this, offset) ；如果 isRepaintBoundary 为false，则直接调用 child._paintWithContext(this, offset)。。
+所以这个layer又是怎样？？？ 
 
-在drawFrame()中，paint 标脏节点时会直接执行 repaintCompositeChild 
+在drawFrame()中，paint 标脏节点刷新时会直接执行 PaintContext.repaintCompositeChild() 
 
-**paint()**
+**_paintWithContext(..) & paint()**
 
 ```dart
+  void _paintWithContext(PaintingContext context, Offset offset) {
+    if (_needsLayout)
+      return;
+    RenderObject debugLastActivePaint;
+    _needsPaint = false;
+    try {
+      paint(context, offset);
+    } catch (e, stack) {
+      _debugReportException('paint', e, stack);
+    }
+  }
+
   void paint(PaintingContext context, Offset offset) { }
+
 ```
 
 RenderObject 中的 paint 是一个空方法，交给子类来实现。 以 RenderFlex 为例： 
@@ -217,8 +245,251 @@ RenderObject 中的 paint 是一个空方法，交给子类来实现。 以 Rend
 
 因为Flex没有要绘制的内容，所以调用 RenderBoxContainerDefaultsMixin 提供的默认实现。在 defaultPaint 中遍历child，绘制child时将 childParentData.offset累加到offset中。所以，这个 offset 的基准到底是个啥？？？？
 
-## PaintContext 和 Layer
+## PaintingContext 和 Layer
 
+### drawFrame()
+PaintContext 可以类比于 BuildContext，Layer 和 Element 最终会组成一个 Layer树，最终渲染是在C++的engine层完成的。在flutter的framework层构成了一颗Layer树，传送到engine进行绘制。
+
+回过头来看，在 drawFrame() 中对需要paint的节点是如何处理的。
+
+```dart
+  void drawFrame() {
+    // BD ADD:
+    Boost.resetIdleCallbacks();
+    assert(renderView != null);
+    pipelineOwner.flushLayout();
+    pipelineOwner.flushCompositingBits();
+    pipelineOwner.flushPaint();
+    renderView.compositeFrame(); // this sends the bits to the GPU
+    pipelineOwner.flushSemantics(); // this also sends the semantics to the OS.
+  }
+```
+
+先直接来看 pipelineOwner.flushPaint(); 和里面调用到的 PaintContext._repaintCompositedChild 
+
+```dart
+  void flushPaint() {
+    try {
+      final List<RenderObject> dirtyNodes = _nodesNeedingPaint;
+      _nodesNeedingPaint = <RenderObject>[];
+      // Sort the dirty nodes in reverse order (deepest first).
+      for (RenderObject node in dirtyNodes..sort((RenderObject a, RenderObject b) => b.depth - a.depth)) {
+        if (node._needsPaint && node.owner == this) {
+          if (node._layer.attached) {
+            PaintingContext.repaintCompositedChild(node);
+          } else {
+            node._skippedPaintingOnLayer();
+          }
+        }
+      }
+    } finally {
+    }
+  }
+```
+
+**PaintingContext._repaintCompositedChild(...)**
+
+```dart
+  static void _repaintCompositedChild(
+    RenderObject child, {
+    bool debugAlsoPaintedParent = false,
+    PaintingContext childContext,
+  }) {
+    // 关注这个 assert，证明了最终需要 paint 的都是 RepaintBoundary 节点
+    assert(child.isRepaintBoundary);
+    OffsetLayer childLayer = child._layer;
+    if (childLayer == null) {
+      // 为 repaint boundaries 创建layer
+      child._layer = childLayer = OffsetLayer();
+    } else {
+      childLayer.removeAllChildren();
+    }
+    // 为 RepaintBoundary 创建 PaintContext
+    childContext ??= PaintingContext(child._layer, child.paintBounds);
+    // 初始化了Offset，说明offset的值是以layer为参考依据的
+    child._paintWithContext(childContext, Offset.zero);
+
+    childContext.stopRecordingIfNeeded();
+  }
+```
+
+再次回顾 PaintingContext._repaintCompositedChild 方法，我们发现，它为 RepaintBoundary ，创建了PaintingContext 和 layer。 说明 RepaintBoundary 、PaintingContext 、layer 是一一对应的， **即 layer 是绘制的基本单位，只有 RepaintBoundary 极其子 RenderObject 共享一个layer， 每次绘制会创建都会为 layer 创建一个 PaintingContext**。而 paint 过程中的offset的参考点，就是layer的左上角的坐标原点。
+
+**renderView.compositeFrame();**
+
+```dart
+  void compositeFrame() {
+    Timeline.startSync('Compositing', arguments: timelineWhitelistArguments);
+    try {
+      final ui.SceneBuilder builder = ui.SceneBuilder();
+      final ui.Scene scene = layer.buildScene(builder);
+      if (automaticSystemUiAdjustment)
+        _updateSystemChrome();
+      _window.render(scene);
+      scene.dispose();
+    } finally {
+      Timeline.finishSync();
+    }
+  }
+```
+
+renderView 是页面的根RenderObject，renderView.layer 是页面的根layer。 调用 `layer.buildScene(builder);` 生成了一个scene， 调用_window.render(scene) 发送给engine层进行渲染
+
+### Layer的标脏和局部刷新
+
+**layer.buildScene**
+
+```dart
+  ui.Scene buildScene(ui.SceneBuilder builder) {
+    List<PictureLayer> temporaryLayers;
+    updateSubtreeNeedsAddToScene();
+    addToScene(builder);
+    _needsAddToScene = false;
+    final ui.Scene scene = builder.build();
+    return scene;
+  }
+
+  @override
+  void updateSubtreeNeedsAddToScene() {
+    super.updateSubtreeNeedsAddToScene();
+    Layer child = firstChild;
+    while (child != null) {
+      child.updateSubtreeNeedsAddToScene();
+      _needsAddToScene = _needsAddToScene || child._needsAddToScene;
+      // child.nextSibling 是下一个子layer， 这里显然是一个树的 层序遍历
+      child = child.nextSibling;
+    }
+  }
+
+  /**
+   * 这是 ContainerLayer 的实现， 没有子Layer的叶子 Layer 实现各不相同
+  **/
+  @override
+  void addToScene(ui.SceneBuilder builder, [ Offset layerOffset = Offset.zero ]) {
+    addChildrenToScene(builder, layerOffset);
+  }
+
+  void addChildrenToScene(ui.SceneBuilder builder, [ Offset childOffset = Offset.zero ]) {
+    Layer child = firstChild;
+    while (child != null) {
+      if (childOffset == Offset.zero) {
+        child._addToSceneWithRetainedRendering(builder);
+      } else {
+        child.addToScene(builder, childOffset);
+      }
+      child = child.nextSibling;
+    }
+  }
+```
+
+renderView 的 layer 是一个 OffsetLayer ，继承自 ContainerLayer 。 
+Layer.buildScene(...) 这个方法在framework调用的地方很少，可以认为只有 renderView 的 layer 会调用 buildScene 方法创建创建一个 scene ， 即 scene 包含了页面的完整 layer 树。
+
+首先会调用 updateSubtreeNeedsAddToScene ， 需要update的原因是， 如果子layer标脏， 那显然父layer 也需要标脏
+
+**_addToSceneWithRetainedRendering**
+
+```dart
+  void markNeedsAddToScene() {
+    // Already marked. Short-circuit.
+    if (_needsAddToScene) {
+      return;
+    }
+
+    _needsAddToScene = true;
+  }
+
+  void _addToSceneWithRetainedRendering(ui.SceneBuilder builder) {
+    if (!_needsAddToScene && _engineLayer != null) {
+      builder.addRetained(_engineLayer);
+      return;
+    }
+    addToScene(builder);
+    _needsAddToScene = false;
+  }
+
+  
+```
+
+markNeedAddToScene() 对 layer 节点进行标脏。在layer属性发生改变时会进行标脏；当子layer添加到父layer时也会进行标脏。
+
+这个方法是唯一用到使用到 _needsAddToScene 标脏flag值的地方。 如果 _needsAddToScene 为false ，调用 builder.addRetained(_engineLayer); 这个 _engineLayer
+
+_eingineLayer 是 layer.addToScene(...) 返回的engine生成的图层（ContainerLayer例外，没有engineLayer）
+
+```dart
+  /**
+   * 这是 OpacityLayer 的addToScene方法，生成了一个 engineLayer ，
+   * 然后调用addChildrenToScene(builder);
+  **/
+  @override
+  void addToScene(ui.SceneBuilder builder, [ Offset layerOffset = Offset.zero ]) {
+    bool enabled = firstChild != null;  // don't add this layer if there's no child
+    if (enabled)
+      engineLayer = builder.pushOpacity(alpha, offset: offset + layerOffset, oldLayer: _engineLayer);
+    else
+      engineLayer = null;
+    addChildrenToScene(builder);
+    if (enabled)
+      builder.pop();
+  }
+```
+
+**SceneBuilder.addRetained()**
+
+```dart
+  void addRetained(EngineLayer retainedLayer) {
+    final _EngineLayerWrapper wrapper = retainedLayer;
+    _addRetained(wrapper._nativeLayer);
+  }
+
+  void _addRetained(EngineLayer retainedLayer) native 'SceneBuilder_addRetained';
+```
+
+addRetained 直接调用了engine层的代码，对layer进行复用。。。
+
+### 直接使用 layer 进行UI绘制
+
+flutter最终是绘制在layer上的，那样的话，实际上，可以脱离 Widget、Element、RenderObject ，直接操作 layer 进行UI的绘制
+
+```dart
+import 'dart:ui';
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
+
+void main(){
+    final OffsetLayer rootLayer = new OffsetLayer();
+    final PictureLayer pictureLayer = new PictureLayer(Rect.zero);
+    rootLayer.append(pictureLayer);
+
+    PictureRecorder recorder = PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+
+    Paint paint = Paint();
+    paint.color = Colors.primaries[Random().nextInt(Colors.primaries.length)];
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, 300, 300), paint);
+    pictureLayer.picture = recorder.endRecording();
+    
+    SceneBuilder sceneBuilder = SceneBuilder();
+    rootLayer.addToScene(sceneBuilder);
+
+    Scene scene = sceneBuilder.build();
+    window.onDrawFrame = (){
+      window.render(scene);
+      // window.scheduleFrame();
+      // 在onDrawFrame回调最后加上scheduleFrame，可以使UI不断刷新，进行动画操作
+      // 不是很懂那vsync的作用是什么。。。
+    };
+    window.scheduleFrame();
+}
+```
+
+## 参考
+
+[Flutter Framework 源码解析（ 2 ）—— 图层详解](https://xieguanglei.github.io/blog/post/flutter-code-chapter-02.html)
 
 
 

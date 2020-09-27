@@ -330,7 +330,8 @@ RenderObjectElement的mount、update、unmount逻辑与ComponentElement大致相
   }
 ```
 
-和element的build流程不同，RenderObject的标脏会向上标脏，直到找到一个 relayoutBoundary 位置。找到 _relayoutBoundary 节点，触发`owner._nodesNeedingLayout.add( this )`与`owner.requestVisualUpdate()` 其中owner._nodesNeedingLayout.add( this )将当前RenderObject注册进PipelineOwner的待刷新列表中，然后触发“VisualUpdate”。这里的owner是PipelineOwner
+和element的build流程不同，RenderObject的标脏会向上标脏。
+找到 _relayoutBoundary 节点，触发`owner._nodesNeedingLayout.add( this )`与`owner.requestVisualUpdate()` 其中owner._nodesNeedingLayout.add( this )将当前RenderObject注册进PipelineOwner的待刷新列表中，然后触发“VisualUpdate”。这里的owner是PipelineOwner
 
 PiplelineOwner.requestVisualUpdate会请求engine进行一次刷新。。
 (todo 不是标脏吗？ 难道不是等待vsync信号对标脏的node进行重绘？？？)
@@ -454,7 +455,8 @@ ensureVisualUpdate 会调用window.scheduleFrame()请求native层绘制新帧。
   }
 ```
 
-和layout的标脏过程类似，一直向上标脏，直到 isRepaintBoundary 为true。需要说明的是，我们可以 RepaintBoundary 是一个widget，我们可以手动添加，来终止paint的向上标脏过程，来达到局部重绘，提升性能。 layoutBoundary 则是framework层帮我们判断的，我们不需要手动处理。
+和layout的标脏过程类似，一直向上标脏，直到 isRepaintBoundary 为true。**注意，这里只有 RepaintBoundary 才加入到了 PiplineOwner 的_nodesNeedingPaint中，即最终是以 RepaintBoundary 单位进行刷新的**
+需要说明的是，我们可以 RepaintBoundary 是一个widget，我们可以手动添加，来终止paint的向上标脏过程，来达到局部重绘，提升性能。 LayoutBoundary 则是只是一个标记位，framework层帮我们判断的，我们不需要手动处理。
 
 **pipelineOwner.flushLayout()**
 
