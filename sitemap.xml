@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/2020/10/04/Fragment%E5%8F%AF%E8%A7%81%E6%80%A7%E6%80%BB%E7%BB%93/</loc>
+    <loc>http://yoursite.com/2021/01/02/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/%E6%BA%90%E7%A0%81%E6%8E%A2%E7%A9%B6Activity%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</loc>
     
-    <lastmod>2020-10-04T10:44:39.216Z</lastmod>
+    <lastmod>2021-01-03T15:37:50.467Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2020/10/04/Android/Fragment%E5%8F%AF%E8%A7%81%E6%80%A7%E6%80%BB%E7%BB%93/</loc>
+    
+    <lastmod>2021-01-02T07:01:09.930Z</lastmod>
     
   </url>
   
@@ -233,13 +240,6 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/11/18/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Glide%E6%BA%90%E7%A0%81-%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B/</loc>
-    
-    <lastmod>2019-12-21T12:16:41.877Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/2019/11/14/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp3%E6%BA%90%E7%A0%81-CacheInterceptor/</loc>
     
     <lastmod>2019-12-21T12:16:41.877Z</lastmod>
@@ -247,7 +247,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/11/17/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp3%E6%BA%90%E7%A0%81-CallServerInterceptor/</loc>
+    <loc>http://yoursite.com/2019/11/18/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/Glide%E6%BA%90%E7%A0%81-%E4%B8%BB%E8%A6%81%E6%B5%81%E7%A8%8B/</loc>
     
     <lastmod>2019-12-21T12:16:41.877Z</lastmod>
     
@@ -255,6 +255,13 @@
   
   <url>
     <loc>http://yoursite.com/2019/11/15/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp3%E6%BA%90%E7%A0%81-ConnectInterceptor/</loc>
+    
+    <lastmod>2019-12-21T12:16:41.877Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/11/17/Android/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp3%E6%BA%90%E7%A0%81-CallServerInterceptor/</loc>
     
     <lastmod>2019-12-21T12:16:41.877Z</lastmod>
     
@@ -282,14 +289,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/07/04/Android/startService-%E5%92%8CbindService/</loc>
+    <loc>http://yoursite.com/2019/06/16/Android/scrollBy-scrollTo-%E5%92%8CScroller/</loc>
     
     <lastmod>2019-12-21T12:16:41.876Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/06/16/Android/scrollBy-scrollTo-%E5%92%8CScroller/</loc>
+    <loc>http://yoursite.com/2019/07/04/Android/startService-%E5%92%8CbindService/</loc>
     
     <lastmod>2019-12-21T12:16:41.876Z</lastmod>
     
@@ -303,13 +310,6 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/04/14/Android/Handler%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/</loc>
-    
-    <lastmod>2019-12-21T12:16:41.874Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://yoursite.com/2019/04/14/Android/Activity%E7%AE%A1%E7%90%86%E7%B1%BB%E7%9A%84%E5%B0%81%E8%A3%85/</loc>
     
     <lastmod>2019-12-21T12:16:41.874Z</lastmod>
@@ -317,7 +317,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2019/08/13/Android/LayoutInflater%E8%A7%A3%E6%9E%90/</loc>
+    <loc>http://yoursite.com/2019/04/14/Android/Handler%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/</loc>
     
     <lastmod>2019-12-21T12:16:41.874Z</lastmod>
     
@@ -325,6 +325,13 @@
   
   <url>
     <loc>http://yoursite.com/2019/04/15/Android/MVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2/</loc>
+    
+    <lastmod>2019-12-21T12:16:41.874Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2019/08/13/Android/LayoutInflater%E8%A7%A3%E6%9E%90/</loc>
     
     <lastmod>2019-12-21T12:16:41.874Z</lastmod>
     
