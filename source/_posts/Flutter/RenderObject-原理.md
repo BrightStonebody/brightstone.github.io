@@ -489,7 +489,13 @@ void main(){
 
 ## 参考
 
+在 main.dart 中添加 `debugRepaintRainbowEnabled = true;` ，或者通过 devtools 可以观察到App的layer树
+
 [Flutter Framework 源码解析（ 2 ）—— 图层详解](https://xieguanglei.github.io/blog/post/flutter-code-chapter-02.html)
+
+[从源码看flutter（四）：Layer篇](https://juejin.im/post/6844904133728665614#heading-10)
+
+[Flutter画面渲染全面解析](https://guoshuyu.cn/home/wx/Flutter-21.html)
 
 
 

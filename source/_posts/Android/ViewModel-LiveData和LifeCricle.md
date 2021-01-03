@@ -2,6 +2,7 @@
 title: 'ViewModel,LiveData和Lifecycle'
 date: 2019-12-21 20:19:41
 tags:
+- ViewModel
 ---
 
 # ViewModel、Lifecycles和LiveData

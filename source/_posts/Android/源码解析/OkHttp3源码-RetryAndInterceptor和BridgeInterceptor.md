@@ -2,10 +2,10 @@
 title: OkHttp3源码-RetryAndInterceptor和BridgeInterceptor
 date: 2019-11-14 16:54:17
 tags:
-  - okhttp3
-  - 源码解析
+- okhttp3
+- 源码解析
 categories:
-  - Android
+- Android
 ---
 
 # OkHttp3 源码-RetryAndInterceptor 和 BridgeInterceptor
