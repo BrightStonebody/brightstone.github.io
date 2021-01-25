@@ -4,9 +4,9 @@ date: 2021-01-02 15:00:33
 tags: Activity
 ---
 
-## StartActivity
+## startActivity
 
-startActivity有很多重载方法，最终都会调用```startActivityForResult```
+startActivity有很多重载方法，最终都会调用`startActivityForResult`
 
 ```java
     public void startActivityForResult(@RequiresPermission Intent intent, int requestCode, @Nullable Bundle options) {
