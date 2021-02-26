@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[自定义LayoutManager]]></title>
+    <url>%2F2021%2F02%2F26%2FAndroid%2F%E8%87%AA%E5%AE%9A%E4%B9%89LayoutManager%2F</url>
+    <content type="text"><![CDATA[LayoutManager 的常用方法generateDefaultLayoutParams生成默认RecyclerView的LayoutParams, 没啥意义，就返回 wrap_content isAutoMeasureEnabled 和 onMeasureisAutoMeasureEnabled()是自测量模式。 如果要支持 wrap_content ，那必须重写这两个方法中的一个。 大部分情况下，isAutoMeasureEnabled 返回 true 即可。重写onMeasure()的情况也极少，除非像我那个PickerLayoutManger一样。 canScrollHorizontally 和 canScrollVertically无需多言 onLayoutChildren当 RecyclerView 的 layout 过程中会调用这个方法，包括第一次 layout 和 其他原因的重新 layout，比如说键盘的升降。 scrollHorizontallyBy 和 scrollVerticallyBy12345678override fun scrollHorizontallyBy( dx: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int &#123; ...&#125; RecyclerView 滚动的时候回回调这个方法，但是它只是告诉你用户滑动的距离，需要你自己去实现滑动的效果。同时需要去判断滑动的边界。但是返回值与 RecyclerView 的 overScorll 的动画有关，返回0会有边界的波纹动画。 getPosition(View)返回 child view 在 adapter 中的位置 getDecoratedXxxx在 LayoutManager 中与布局有关的api都需要替换成带 Decorated 的api，不然无法实现对 itemDecorated 的兼容 detachAndScrapAttachedViews()从 RecyclerView 暂时移除 child 并送入临时缓存。 之前一直很奇怪，暂时移除是个什么场景。 后来想明白了，在每次布局 child 之前，都需要吧调用一次这个方法，吧所有的 child 移除到临时缓存里。否则，在布局的时候 addView(child) ，如果 child 已经 add 到了 RecyclerView 里，会造成一些麻烦。 removeAndRecycleView移除 child 并将对应的 ViewHolder 移动到 cachePool ，从 cachePool 中取出的 ViewHolder 需要重新调用 Adapter.onBindViewHolder 方法 自定义 LayoutManager 的一般套路scrollHorizontallyBy 和 onLayoutChildren 可以服用同一个布局逻辑。 确定锚点 view 的 position 确定布局的左右(上下)边界 开始 addView()-&gt;measureView()-&gt;layoutView() 回收布局边界之外的 child demo代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184185186class CustomLinearLayoutManager : RecyclerView.LayoutManager() &#123; override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams &#123; return RecyclerView.LayoutParams( ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT ) &#125; override fun isAutoMeasureEnabled(): Boolean &#123; return true &#125; override fun canScrollHorizontally(): Boolean &#123; return true &#125; override fun canScrollVertically(): Boolean &#123; return false &#125; override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) &#123; if (state.itemCount == 0) &#123; removeAndRecycleAllViews(recycler) return &#125; var left = paddingStart var curPos = 0 if (childCount &gt; 0) &#123; // 这里是兼容键盘升起然后重新 rebuild 的情况。 // 如果不做兼容，RecyclerView 会移动到列表最顶部 left = getDecoratedLeft(getChildAt(0)!!) curPos = getPosition(getChildAt(0)!!) &#125; detachAndScrapAttachedViews(recycler) fill(recycler, state, curPos, left, paddingStart + getAvailableSpace(), true) &#125; override fun scrollHorizontallyBy( dx: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State ): Int &#123; val resDx = calculateOffset(recycler, state, dx) if (resDx == 0 || itemCount == 0) &#123; return resDx &#125; val d = abs(resDx) if (resDx &gt;= 0) &#123; val anchorView = getChildAt(0) val anchorPos = getPosition(anchorView!!) val anchorLeft = getDecoratedLeft(anchorView) detachAndScrapAttachedViews(recycler) fill(recycler, state, anchorPos, anchorLeft - d, getAvailableSpace() + paddingStart, true) &#125; else &#123; val anchorView = getChildAt(childCount - 1) val anchorPos = getPosition(anchorView!!) val anchorRight = getDecoratedRight(anchorView) detachAndScrapAttachedViews(recycler) fill(recycler, state, anchorPos, paddingLeft, anchorRight + d, false) &#125; recycler(recycler, state, resDx) return resDx &#125; private fun calculateOffset(recycler: RecyclerView.Recycler, state: RecyclerView.State, dx: Int): Int &#123; if (childCount == 0 || dx == 0) &#123; return 0 &#125; var fillPos = RecyclerView.NO_POSITION val d = abs(dx) if (dx &lt; 0) &#123; val firstView = getChildAt(0) val firstPos = getPosition(firstView!!) val firstLeft = getDecoratedLeft(firstView) fillPos = firstPos - 1 if (fillPos &lt; 0 &amp;&amp; firstLeft + d &gt; paddingStart) &#123; return firstLeft - paddingStart &#125; if (firstLeft + d &lt; paddingStart) &#123; return dx &#125; &#125; else &#123; val lastView = getChildAt(childCount - 1) val lastPos = getPosition(lastView!!) val lastRight = getDecoratedRight(lastView) fillPos = lastPos + 1 val endEdge = getAvailableSpace() + paddingStart if (fillPos &gt;= itemCount &amp;&amp; lastRight - d &lt; endEdge) &#123; return lastRight - endEdge &#125; if (lastRight - d &gt; endEdge) &#123; return dx &#125; &#125; return dx &#125; private fun fill(recycler: RecyclerView.Recycler, state: RecyclerView.State, anchorIndex: Int, anchorLeft: Int, anchorRight: Int, isLTR: Boolean) &#123; var availableSpace = anchorRight - anchorLeft var fillPos = anchorIndex var left = anchorLeft var right = anchorRight val top = paddingTop while (availableSpace &gt; 0 &amp;&amp; fillPos &gt;= 0 &amp;&amp; fillPos &lt; state.itemCount) &#123; val view = recycler.getViewForPosition(fillPos) if (isLTR) &#123; addView(view) measureChildWithMargins(view, 0, 0) right = left + getDecoratedMeasuredWidth(view) val bottom = top + getDecoratedMeasuredHeight(view) layoutDecoratedWithMargins(view, left, top, right, bottom) fillPos++ left = right &#125; else &#123; addView(view, 0) measureChildWithMargins(view, 0, 0) left = right - getDecoratedMeasuredWidth(view) val bottom = top + getDecoratedMeasuredHeight(view) layoutDecoratedWithMargins(view, left, top, right, bottom) fillPos-- right = left &#125; availableSpace -= getDecoratedMeasuredWidth(view) &#125; &#125; private fun recycler(recycler: RecyclerView.Recycler, state: RecyclerView.State, dx: Int) &#123; //要回收View的集合，暂存 val recycleViews = hashSetOf&lt;View&gt;() //dx&gt;0就是手指从右滑向左，所以要回收前面的children if (dx &gt; 0) &#123; for (i in 0 until childCount) &#123; val child = getChildAt(i)!! val right = getDecoratedRight(child) //itemView的right&lt;0就是要超出屏幕要回收View if (right &gt; paddingStart) break recycleViews.add(child) &#125; &#125; //dx&lt;0就是手指从左滑向右，所以要回收后面的children if (dx &lt; 0) &#123; for (i in childCount - 1 downTo 0) &#123; val child = getChildAt(i)!! val left = getDecoratedLeft(child) //itemView的left&gt;recyclerView.width就是要超出屏幕要回收View if (left &lt; getAvailableSpace() + paddingStart) break recycleViews.add(child) &#125; &#125; //真正把View移除掉 for (view in recycleViews) &#123; removeAndRecycleView(view, recycler) &#125; &#125; private fun getAvailableSpace(): Int &#123; return width - paddingStart - paddingEnd &#125;&#125;]]></content>
+      <tags>
+        <tag>Android</tag>
+        <tag>RecyclerView</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[redux源码]]></title>
     <url>%2F2021%2F01%2F24%2FFlutter%2Fredux%E6%BA%90%E7%A0%81%2F</url>
     <content type="text"><![CDATA[Redux是一个Flutter状态管理工具。实现并不复杂，其核心是一个简单的观察者模式。我们从 观察者 和 被观察者 两个角度来分析 Redux 被观察者 Store/State被观察者 明显是 Store 和 State 。 State 是状态的 model类 。 Store 是 State 的持有者。 1234567891011121314151617181920212223242526272829303132333435363738class Store&lt;State&gt; &#123; Reducer&lt;State&gt; reducer; final StreamController&lt;State&gt; _changeController; State _state; List&lt;NextDispatcher&gt; _dispatchers; Store( this.reducer, &#123; State initialState, List&lt;Middleware&lt;State&gt;&gt; middleware = const [], bool syncStream = false, bool distinct = false, &#125;) : _changeController = StreamController.broadcast(sync: syncStream) &#123; _state = initialState; _dispatchers = _createDispatchers( middleware, _createReduceAndNotify(distinct), ); &#125; NextDispatcher _createReduceAndNotify(bool distinct) &#123; return (dynamic action) &#123; final state = reducer(_state, action); if (distinct &amp;&amp; state == _state) return; _state = state; _changeController.add(state); &#125;; &#125; dynamic dispatch(dynamic action) &#123; return _dispatchers[0](action); &#125; Stream&lt;State&gt; get onChange =&gt; _changeController.stream;&#125; 当一个 Store 创建时，会实例化一个 _changeController ，并将 middleware 和 reducer 打包合并成 _dispatchers 集合。注意看 _createReduceAndNotify 方法， 当每一个 action 发送到 Store 时，会交给 reducer 处理，并将新的 state 给 add 到 _changeController 里。这样就完成了状态的更新。。 是不是很简单。。。 观察者Redux 里观察者是 StoreConnector 。但是得先提一下 StoreProvider ， StoreProvider 是初始化和存储 Store 的 Widget 。 12345678910111213141516171819202122232425262728293031323334class StoreProvider&lt;S&gt; extends InheritedWidget &#123; final Store&lt;S&gt; _store; /// Create a [StoreProvider] by passing in the required [store] and [child] /// parameters. const StoreProvider(&#123; Key key, @required Store&lt;S&gt; store, @required Widget child, &#125;) : assert(store != null), assert(child != null), _store = store, super(key: key, child: child); static Store&lt;S&gt; of&lt;S&gt;(BuildContext context, &#123;bool listen = true&#125;) &#123; final type = _typeOf&lt;StoreProvider&lt;S&gt;&gt;(); final provider = (listen ? context.inheritFromWidgetOfExactType(type) : context .ancestorInheritedElementForWidgetOfExactType(type) ?.widget) as StoreProvider&lt;S&gt;; if (provider == null) throw StoreProviderError(type); return provider._store; &#125; // Workaround to capture generics static Type _typeOf&lt;T&gt;() =&gt; T; @override bool updateShouldNotify(StoreProvider&lt;S&gt; oldWidget) =&gt; _store != oldWidget._store;&#125; StoreProvider 也很简单，就是一个典型的 InheritedWidget 。 现在来看 StoreConnector ， 12345678910111213141516171819202122232425262728293031323334class StoreConnector&lt;S, ViewModel&gt; extends StatelessWidget &#123; const StoreConnector(&#123; Key key, @required this.builder, @required this.converter, this.distinct = false, this.onInit, this.onDispose, this.rebuildOnChange = true, this.ignoreChange, this.onWillChange, this.onDidChange, this.onInitialBuild, &#125;) : assert(builder != null), assert(converter != null), super(key: key); @override Widget build(BuildContext context) &#123; return _StoreStreamListener&lt;S, ViewModel&gt;( store: StoreProvider.of&lt;S&gt;(context), builder: builder, converter: converter, distinct: distinct, onInit: onInit, onDispose: onDispose, rebuildOnChange: rebuildOnChange, ignoreChange: ignoreChange, onWillChange: onWillChange, onDidChange: onDidChange, onInitialBuild: onInitialBuild, ); &#125;&#125; 可以看出来，StoreConnector 只是一个壳，实际的工作者是 _StoreStreamListener 。 StoreConnect 唯一做的工作就是调用 StoreProvider.of&lt;S&gt;(context) 给 _StoreStreamListener 的 store 赋值。 _StoreStreamListener 是一个 StatefulWidget 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253class _StoreStreamListenerState&lt;S, ViewModel&gt; extends State&lt;_StoreStreamListener&lt;S, ViewModel&gt;&gt; &#123; @override void initState() &#123; ... latestValue = widget.converter(widget.store); _createStream(); super.initState(); &#125; @override Widget build(BuildContext context) &#123; return widget.rebuildOnChange ? StreamBuilder&lt;ViewModel&gt;( stream: stream, builder: (context, snapshot) =&gt; widget.builder( context, latestValue, ), ) : widget.builder(context, latestValue); &#125; void _createStream() &#123; stream = widget.store.onChange .where(_ignoreChange) .map(_mapConverter) .where(_whereDistinct) .transform(StreamTransformer.fromHandlers(handleData: _handleChange)); &#125; ViewModel _mapConverter(S state) &#123; return widget.converter(widget.store); &#125; bool _whereDistinct(ViewModel vm) &#123; if (widget.distinct) &#123; return vm != latestValue; &#125; return true; &#125; void _handleChange(ViewModel vm, EventSink&lt;ViewModel&gt; sink) &#123; ... latestValue = vm; ... sink.add(vm); &#125;&#125; 在 build 方法中 widget.rebuildOnChange 默认为 true 。StreamBuilder 将 stream 转化为 widget 。stream 就是对 widget.store.onChange (Store 里的 _changeController) 的监听。 需要说明的是， StoreConnector 只是在 Flutter Framework 基础上添加的额外的监听机制。之前自己一直有个误区： 当 StoreConnector 的外部 Widget 执行 rebuild 之后， StoreConnector 可以控制 child 不 rebuild ，只要 vm 没有发生改变。这显然不正确。有空可以看看 StreamBuilder 的源码。 Action 事件的执行12345class Store &#123; dynamic dispatch(dynamic action) &#123; return _dispatchers[0](action); &#125;&#125; 。。。很简单， Store.dispath 从 _dispatchers 的第一个位置开始分发事件。。]]></content>
@@ -159,8 +168,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -171,8 +180,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>glide</tag>
         <tag>源码解析</tag>
+        <tag>glide</tag>
       </tags>
   </entry>
   <entry>
@@ -183,8 +192,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -195,8 +204,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -207,8 +216,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -219,8 +228,8 @@
         <category>Android</category>
       </categories>
       <tags>
-        <tag>源码解析</tag>
         <tag>okhttp3</tag>
+        <tag>源码解析</tag>
       </tags>
   </entry>
   <entry>
@@ -285,20 +294,6 @@
       </tags>
   </entry>
   <entry>
-    <title><![CDATA[RecyclerView全局刷新的问题]]></title>
-    <url>%2F2019%2F09%2F15%2FAndroid%2FRecyclerView%E5%85%A8%E5%B1%80%E5%88%B7%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98%2F</url>
-    <content type="text"><![CDATA[1. RecyclerView全局刷新避免出现闪烁闪烁是因为RecyclerView有默认的动画, 把默认动画去掉就可以了 12mTabListRecycler.getItemAnimator().setChangeDuration(0);((SimpleItemAnimator) mTabListRecycler.getItemAnimator()).setSupportsChangeAnimations(false); 2. RecyclerView全局刷新避免出现滚动1mTabListRecycler.setHasFixedSize(true); setHasFixedSize(true)的意思是表示, RecyclerView的大小是不收Adapter的内容影响的, 这样RecyclerView绘制的时候会有很多优化. 同时也能够解决刷新的滚动问题 3. RecyclerView全局刷新View避免卡顿3.1 onBindViewHolder(VH holder, int position， List payloads)这个方法默认是调用普通的onBindViewHolder方法。我们可以重写这个方法，在payloads参数为空时，执行默认的onBindViewHolder，在其不为空时，刷新每个item特定的view在调用notifyxxxx类似方法的时候，调用包含payload参数的重载方法 问题：实践了上面的方法，发现卡顿的问题得到了缓解，但是并没有完全解决 3.2 创建并操作自己的ViewHolder缓存还是有卡顿的原因：在调用notifyxxxx相关方法时，即使添加了payload参数，依然会有很多item刷新时走onCreateViewHolder方法，在这里进行inflate操作会非常耗时。所以要想办法跳过onCreateViewHolder方法 创建自己的viewholder缓存 创建缓存集合 1private List&lt;ViewHolder&gt; holderList = new ArrayList&lt;&gt;(); 添加到集合 1234holder.itemView.setTag(itemData));if (!holderList.contains(holder)) &#123; holderList.add(holder);&#125; 因为在添加之前做了是否包含的判断，所以集合中按道理之后包含显示的ViewHolder以及缓存的ViewHolder，集合的size并不会无限制的增长。 刷新123456public void update()&#123; for (ViewHolder holder : holderList) &#123; ItemData itemData = (ItemData) holder.itemView.getTag(); // update view &#125;&#125; 卡顿问题解决]]></content>
-      <categories>
-        <category>Android</category>
-        <category>View</category>
-      </categories>
-      <tags>
-        <tag>Android</tag>
-        <tag>View</tag>
-        <tag>RecyclerView</tag>
-      </tags>
-  </entry>
-  <entry>
     <title><![CDATA[通知铃声的自定义遇到的问题-根据uri读取文件]]></title>
     <url>%2F2019%2F08%2F28%2FAndroid%2F%E9%80%9A%E7%9F%A5%E9%93%83%E5%A3%B0%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98-%E6%A0%B9%E6%8D%AEuri%E8%AF%BB%E5%8F%96%E6%96%87%E4%BB%B6%2F</url>
     <content type="text"><![CDATA[通知铃声自定义遇到的问题: 根据uri读取文件问题：在自定义通知铃声是，当铃声的uri来自本地文件，或者是项目的资源文件，当通知弹出时，没有声音 问题根源：1.从系统文件管理器中获取文件，从得到的uri中获取原始路径所有尝试从Uri中获取原始路径的方法，都是不推荐和不可靠的 网上大部分的方法都是解析Uri，使用cursor读取对应的字段，然后获取到文件的路径，但是，经过尝试后发现，大部分机型中，cursor并没有那个字段，当然也就得不到对应的路径。 正确的做法应当是，使用ContentResolver获取到对应的文件流，拷问文件到App的目录中。 1InputStream fis = getContentResolver().openInputStream(uri); 2. 将拷贝的文件转化为uri失败的尝试：使用Uri.fromFile():首先，App将自己的铃声文件设置到notificaiton中，系统要弹出一个notification时，会调用我们的项目目录的铃声文件。 在Android7.0以上的版本中，对这种行为进行了限制，获取文件的Uri一定要使用FileProvider，而不能直接调用fromFile()方法. 3. grantUriPermission()在某些机型中，使用file自定义notification的声音，仍然不能正常工作。设置logcat的Filter选项为No Filter, 会出现FileProvider Permission denial 的 warning为什么要选择No Filter选项才会看到这个warning。是因为，弹出notification是系统服务，和我们的APP项目不是一个包名在file转uri之后添加一个授权的语句就可以了：12getApplicationContext().grantUriPermission(&quot;com.android.systemui&quot;, Uri.parse(info.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION); 包名com.android.systemui是系统服务的一个包名，负责notification、StatusBar等的相关操作 到这里问题就解决了]]></content>
@@ -311,7 +306,7 @@
   <entry>
     <title><![CDATA[RecyclerView缓存机制总结]]></title>
     <url>%2F2019%2F08%2F15%2FAndroid%2FRecyclerView%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6%E6%80%BB%E7%BB%93%2F</url>
-    <content type="text"><![CDATA[RecyclerView缓存机制总结基本概念scrapped:A “scrapped” view is a view that is still attached to its parent RecyclerView but that has been marked for removal or reuse RecyclerView中涉及到缓存的集合 mAttachedScrap 显示在屏幕中，未与RecyclerView分离但被标记移除的Holder。 实际上是从屏幕上分离出来的ViewHolder，但是又即将添加到屏幕上去的ViewHolder。 mChangedScrap 显示在屏幕中，数据已经发生改变的Holder。notifxxx方法时产生 mCachedViews 在屏幕外的Holder。缓存，幕刃大小为2。 mRecyclerPool 在屏幕外的Holder。当mCachedViews满时，存储至此。按照ViewType进行分类存储。默认大小为5。从中取出的Holder需要调用onBindViewHolder方法 mAttachedScrap、mChangedScrap、mCachedViews中取出的Holder是直接可用的，不需要调用onCreatedViewHolder和onBindViewHolder方法。mRecyclerPool中取出的Holder是无效的，需要调用onBindViewHolder方法很奇怪，按照网上mChangedScrap的解释，其中的Holder明显是需要调用onBindViewHolder方法的。但是网上的解释同时又都说不需要调用。。 RecyclerView获取Holder的顺序(sdk 28) getChangedScrapViewForPosition getScrapOrHiddenOrCachedHolderForPosition getScrapOrCachedViewForId getChildViewHolder mViewCacheExtension.getViewForPositionAndType getRecycledViewPool().getRecycledView mAdapter.createViewHolder 四级缓存 mAttachedScrap mChangedScrap mCacheView mViewCacheExtension mRecyclerPool ListView的缓存机制缓存的集合 mActiveViews 屏幕内的view，可直接重用 mScrapViews 屏幕外的view，需要调用bind 与RecyclerView的不同 缓存不同： RecyclerView缓存的是ViewHolder，避免了每次的findViewByid，ListView缓存的是View。 RecyclerView中mCacheViews(屏幕外)获取缓存时，是通过匹配pos获取目标位置的缓存，这样做的好处是，当数据源数据不变的情况下，无须重新bindView。而同样是离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新getView（即必定会重新bindView） RecyclerView可以实现局部刷新， ListView不行 参考：RecyclerView源码分析缓存机制 RecyclerView的缓存机制 Android ListView 与 RecyclerView 对比浅析–缓存机制]]></content>
+    <content type="text"><![CDATA[RecyclerView缓存机制总结基本概念scrapped:A “scrapped” view is a view that is still attached to its parent RecyclerView but that has been marked for removal or reuse RecyclerView中涉及到缓存的集合 mAttachedScrap 显示在屏幕中，未与RecyclerView分离但被标记移除的Holder。 实际上是从屏幕上分离出来的ViewHolder，但是又即将添加到屏幕上去的ViewHolder。 mChangedScrap 显示在屏幕中，数据已经发生改变的Holder。notifxxx方法时产生 mCachedViews 在屏幕外的Holder。缓存，幕刃大小为2。 mRecyclerPool 在屏幕外的Holder。当mCachedViews满时，存储至此。按照ViewType进行分类存储。默认大小为5。从中取出的Holder需要调用onBindViewHolder方法 mAttachedScrap、mChangedScrap、mCachedViews中取出的Holder是直接可用的，不需要调用onCreatedViewHolder和onBindViewHolder方法。mRecyclerPool中取出的Holder是无效的，需要调用onBindViewHolder方法很奇怪，按照网上mChangedScrap的解释，其中的Holder明显是需要调用onBindViewHolder方法的。但是网上的解释同时又都说不需要调用。。 RecyclerView获取Holder的顺序(sdk 28) getChangedScrapViewForPosition getScrapOrHiddenOrCachedHolderForPosition getScrapOrCachedViewForId getChildViewHolder mViewCacheExtension.getViewForPositionAndType getRecycledViewPool().getRecycledView mAdapter.createViewHolder 四级缓存 mAttachedScrap mChangedScrap mCacheView mViewCacheExtension mRecyclerPool ListView的缓存机制缓存的集合 mActiveViews 屏幕内的view，可直接重用 mScrapViews 屏幕外的view，需要调用bind 与RecyclerView的不同 缓存不同： RecyclerView缓存的是ViewHolder，避免了每次的findViewByid，ListView缓存的是View。 RecyclerView中mCacheViews(屏幕外)获取缓存时，是通过匹配pos获取目标位置的缓存，这样做的好处是，当数据源数据不变的情况下，无须重新bindView。而同样是离屏缓存，ListView从mScrapViews根据pos获取相应的缓存，但是并没有直接使用，而是重新getView（即必定会重新bindView） RecyclerView可以实现局部刷新， ListView不行 参考：RecyclerView源码分析缓存机制 RecyclerView的缓存机制 Android ListView 与 RecyclerView 对比浅析–缓存机制 testRecycler.onMeasure()123456789101112131415161718192021222324252627282930313233343536373839404142434445@Overrideprotected void onMeasure(int widthSpec, int heightSpec) &#123; if (mLayout == null) &#123; // 未设置LayoutManager，采用defaultMeasure defaultOnMeasure(widthSpec, heightSpec); return; &#125; // 自动测量 if (mLayout.isAutoMeasureEnabled()) &#123; ... // 交给 LayoutManager测量自身 mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec); final boolean measureSpecModeIsExactly = widthMode == MeasureSpec._EXACTLY_ &amp;&amp; heightMode == MeasureSpec. _EXACTLY_ ; // 当宽高都为 EXACTLY,结束测量 if (measureSpecModeIsExactly || mAdapter == null) &#123; return; &#125; if (mState.mLayoutStep == State. _STEP_START_ ) &#123; // 进行第一步测量 dispatchLayoutStep1(); &#125; ... // 进行第二步测量 dispatchLayoutStep2(); // now we can get the width and height from the children. mLayout.setMeasuredDimensionFromChildren(widthSpec, heightSpec); // 如果 RecyclerView 宽高不是 exactly 并且至少一个child的宽高不是 exactly // 就需要进行二次测量 if (mLayout.shouldMeasureTwice()) &#123; ... dispatchLayoutStep2(); // now we can get the width and height from the children. mLayout.setMeasuredDimensionFromChildren(widthSpec, heightSpec); &#125; &#125; else &#123; if (mHasFixSize) &#123; mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec); return; &#125; &#125;&#125;]]></content>
       <categories>
         <category>Android</category>
         <category>View</category>
@@ -455,18 +450,6 @@
       </categories>
       <tags>
         <tag>AndroidStudio</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[MVP模式防止内存泄露]]></title>
-    <url>%2F2019%2F04%2F15%2FAndroid%2FMVP%E6%A8%A1%E5%BC%8F%E9%98%B2%E6%AD%A2%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%2F</url>
-    <content type="text"><![CDATA[MVP模式防止内存泄露参考链接https://jocherch.github.io/mvp/mvp-memory-leak/https://blog.csdn.net/Xiong_IT/article/details/52610729 发生内存泄露的原因由于Presenter经常性地需要执行一些耗时的操作，例如，我们经常使用的网络请求数据。当 Presenter 持有了 Activity 的强引用，如果在请求结束之前，Activity 被销毁了，那么由于网络请求还没有返回，导致 Presenter 一直持有 Activity 对象的引用，使得该对象无法被系统回收，此时就发生了内存泄露。 解决方案：通过弱引用和 Activity / Fragment 的生命周期来解决这个问题。 Model12345interface BaseMvpModel&#123; public void mvpCancleTasks(); // TODO 终止线程池ThreadPool.shutDown()，AsyncTask.cancle()，或者调用框架的取消任务api &#125; View123456789101112interface BaseMvpView&#123; public void mvpDetachView(); /* 例如 @Override public void onDestroy() &#123; super.onDestroy(); mPresenter.mvpDestroy(); mPresenter = null; &#125; */&#125; Presenter123456789101112interface BaseMvpPresenter&#123; public void mvpDestory(); /*例如: public void mvpDestory() &#123; view = null; if(modle != null) &#123; modle.mvpaCncleTasks(); modle = null; &#125; &#125; */&#125; 这里只是创建了一个BaseInterface用于让mvp的接口去继承，没有做更加详细的封装，仅仅由于提示。主要是不同的模块处理可能会有不同的操作 注意要使用WeakReference并不是在任何情况下Activity的onDestroy都会被调用（其它原因导致Activity对象还在被引用，就不会回调onDestroy方法），一旦这种情况发生，弱引用也能够保证不会造成内存泄露。]]></content>
-      <categories>
-        <category>Android</category>
-      </categories>
-      <tags>
-        <tag>内存泄露</tag>
-        <tag>MVP</tag>
       </tags>
   </entry>
   <entry>
