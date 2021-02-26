@@ -67,3 +67,55 @@ mRecyclerPool中取出的Holder是无效的，需要调用onBindViewHolder方法
 [RecyclerView的缓存机制](https://www.jianshu.com/p/efe81969f69d)
 
 [Android ListView 与 RecyclerView 对比浅析--缓存机制](https://mp.weixin.qq.com/s?__biz=MzA3NTYzODYzMg==&mid=2653578065&idx=2&sn=25e64a8bb7b5934cf0ce2e49549a80d6&chksm=84b3b156b3c43840061c28869671da915a25cf3be54891f040a3532e1bb17f9d32e244b79e3f&scene=21#wechat_redirect)
+
+
+## test
+
+**Recycler.onMeasure()**
+```java
+@Override
+protected  void  onMeasure(int widthSpec, int heightSpec)  {
+    if (mLayout == null) {
+        // 未设置LayoutManager，采用defaultMeasure
+        defaultOnMeasure(widthSpec, heightSpec);
+        return;
+    }
+     // 自动测量
+    if (mLayout.isAutoMeasureEnabled()) {
+        ...
+        // 交给 LayoutManager测量自身
+        mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);
+        final  boolean measureSpecModeIsExactly =
+                    widthMode == MeasureSpec._EXACTLY_ && heightMode == MeasureSpec. _EXACTLY_ ;
+        // 当宽高都为 EXACTLY,结束测量
+        if (measureSpecModeIsExactly || mAdapter == null) {
+            return;
+        }
+        if (mState.mLayoutStep == State. _STEP_START_ ) {
+        // 进行第一步测量
+            dispatchLayoutStep1();
+        }
+        ...
+        // 进行第二步测量
+        dispatchLayoutStep2();
+        // now we can get the width and height from the children.
+        mLayout.setMeasuredDimensionFromChildren(widthSpec, heightSpec);
+      
+        // 如果 RecyclerView 宽高不是 exactly 并且至少一个child的宽高不是 exactly
+        // 就需要进行二次测量
+        if (mLayout.shouldMeasureTwice()) {
+            ...
+            dispatchLayoutStep2();
+            // now we can get the width and height from the children.
+            mLayout.setMeasuredDimensionFromChildren(widthSpec, heightSpec);
+        }
+    } else {
+        if (mHasFixSize) {
+            mLayout.onMeasure(mRecycler, mState, widthSpec, heightSpec);
+            return;
+        }
+
+        
+    }
+}
+```
