@@ -164,7 +164,7 @@ mParent 代表的是 ActivityGroup，是 Activity 很早的版本里才有的东
    -> ...resumeTopActivityInnerLocked(...)
 ```
 
-在 `resumeTopActivityInnerLocked` 中会先对 resume 状态的 activity 执行 pause。
+在 `resumeTopActivityInnerLocked` 中会先对 resume 状态的 activity 执行 pause。 
 
 ```java
     private boolean resumeTopActivityInnerLocked(ActivityRecord prev, ActivityOptions options) {
@@ -174,6 +174,7 @@ mParent 代表的是 ActivityGroup，是 Activity 很早的版本里才有的东
             pausing |= startPausingLocked(userLeaving, false, next, false);
         }
         ...
+        // 开始进行真正最终真正的activity启动
         mStackSupervisor.startSpecificActivityLocked(next, true, true);
         
         try {

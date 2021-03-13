@@ -231,7 +231,7 @@ class CustomLinearLayoutManager : RecyclerView.LayoutManager() {
                 recycleViews.add(child)
             }
         }
-
+ 
         //dx<0就是手指从左滑向右，所以要回收后面的children
         if (dx < 0) {
             for (i in childCount - 1 downTo 0) {
